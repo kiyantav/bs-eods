@@ -121,6 +121,15 @@
       <button id="confirm-yes" class="btn-success">Yes, submit</button>
     </div>
   </div>
+
+    <div id="success-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:var(--primary); color:var(--white); padding:2rem; border-radius:16px; max-width:400px; margin:auto; box-shadow:0 8px 32px rgba(0,0,0,0.4); text-align:center;">
+    <h2 style="color:var(--success); margin-top:0;">✅ Submitted!</h2>
+    <p>Your report has been saved.</p>
+    <button id="success-ok" class="btn-success" style="margin-top:1rem;">OK</button>
+  </div>
+</div>
+    
 </div>
   <script>
 document.getElementById("logout-btn-form").addEventListener("click", () => {
