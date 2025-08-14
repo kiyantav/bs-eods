@@ -1,5 +1,9 @@
-const SUPABASE_URL = "https://ydhtxdkrzoffjdizqtej.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHR4ZGtyem9mZmpkaXpxdGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNjYwNjEsImV4cCI6MjA3MDc0MjA2MX0.SSGceGhQ2ZxrfNzxoXC0jJHd6JjKM_RwMEe4iMoTQbI";
+// const SUPABASE_URL = "https://ydhtxdkrzoffjdizqtej.supabase.co";
+// const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHR4ZGtyem9mZmpkaXpxdGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNjYwNjEsImV4cCI6MjA3MDc0MjA2MX0.SSGceGhQ2ZxrfNzxoXC0jJHd6JjKM_RwMEe4iMoTQbI";
+
+const SUPABASE_URL = typeof process !== "undefined" && process.env.VITE_SUPABASE_URL ? process.env.VITE_SUPABASE_URL : "https://ydhtxdkrzoffjdizqtej.supabase.co";
+const SUPABASE_KEY = typeof process !== "undefined" && process.env.VITE_SUPABASE_KEY ? process.env.VITE_SUPABASE_KEY : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaHR4ZGtyem9mZmpkaXpxdGVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNjYwNjEsImV4cCI6MjA3MDc0MjA2MX0.SSGceGhQ2ZxrfNzxoXC0jJHd6JjKM_RwMEe4iMoTQbI";
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
