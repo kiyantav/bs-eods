@@ -434,6 +434,7 @@ function showFeedback(message, type = 'success') {
 function showConfirmationModal(rowsToInsert) {
   const modal = document.getElementById("confirmation-modal");
   const summaryDiv = document.getElementById("confirmation-summary");
+  const feedback = document.getElementById("form-feedback"); 
   modal.style.display = "flex";
 
   // Build summary HTML
