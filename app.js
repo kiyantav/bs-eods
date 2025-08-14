@@ -16,7 +16,7 @@ islington: ["Bradley", "Juan", "Stef", "Maz", "Lou", "Tom"],
 
 // Demo passwords
 const passwords = {
-  barber: "barbersmiths123",
+  barber: "BS123",
   admin: "Hareth08"
 };
 
