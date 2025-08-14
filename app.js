@@ -87,7 +87,11 @@ dailyForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  const barberInputs = barberListDiv.querySelectorAll("input[type='number']");
+  const barberInputs = [
+    ...barberListDiv.querySelectorAll("input[type='number']"),
+    ...document.getElementById("other-barbers-list").querySelectorAll("input[type='number']")
+  ];
+
   const rowsToInsert = [];
   barberInputs.forEach(input => {
     const val = input.value;
@@ -118,19 +122,7 @@ dailyForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // batch insert
-  const { data, error } = await supabaseClient.from('daily_logs').insert(rowsToInsert);
-  if (error) {
-    console.error('Insert error', error);
-    feedback.textContent = "Error saving data. Check console.";
-    return;
-  }
-
-  feedback.style.color = "green";
-  feedback.textContent = "Form submitted!";
-  dailyForm.reset();
-  document.getElementById("date").value = new Date().toISOString().slice(0,10);
-  setTimeout(() => { feedback.textContent = ""; feedback.style.color = ""; }, 2000);
+   showConfirmationModal(rowsToInsert);
 });
 
 
@@ -341,86 +333,6 @@ loginBtn.addEventListener("click", () => {
     loginFeedback.textContent = "Incorrect password. Please try again.";
   }
 });
-
-// function populateBarberInputs(shopName) {
-//   barberListDiv.innerHTML = "";
-//   const list = barbersByShopMap[shopName] || (barbersByShop[shopName] || []).map(n => ({ id: null, name: n }));
-  
-//   list.forEach(barber => {
-//     const label = document.createElement("label");
-//     label.textContent = `${barber.name} Haircuts: `;
-//     const input = document.createElement("input");
-//     input.type = "number";
-//     input.min = "0";
-//     input.step = "0.5";
-//     if (barber.id) input.dataset.barberId = barber.id;
-//     input.dataset.barberName = barber.name;
-//     input.name = `haircuts_${barber.name}`;
-//     input.placeholder = "0";
-//     label.appendChild(input);
-//     barberListDiv.appendChild(label);
-//   });
-//     // Add "Other Barbers" dropdown
-//   const otherBarbers = Object.entries(barbersByShopMap)
-//     .filter(([shop, _]) => shop !== shopName)
-//     .flatMap(([_, barbers]) => barbers);
-
-//   if (otherBarbers.length > 0) {
-//     const selectLabel = document.createElement("label");
-//     selectLabel.textContent = "Other Barber:";
-//     const select = document.createElement("select");
-//     select.innerHTML = `<option value="">Select...</option>` +
-//     otherBarbers.map(b => `<option value="${b.id}">${b.name}</option>`).join("")
-//     select.id = "other-barber-select";
-//     selectLabel.appendChild(select);
-//     barberListDiv.appendChild(selectLabel);
-
-//     // When selected, add input for that barber
-//    select.addEventListener("change", () => {
-//   const selectedId = select.value;
-//   if (!selectedId) return;
-//   const selectedBarber = otherBarbers.find(b => b.id === selectedId);
-//   if (!selectedBarber) return;
-//   // Prevent duplicate input
-//   if (document.getElementById(`other-barber-input-${selectedId}`)) return;
-
-//  const label = document.createElement("label");
-// label.textContent = `${selectedBarber.name} (Other) Haircuts: `;
-// label.style.display = "flex";
-// label.style.alignItems = "center";
-// label.style.gap = "8px"; // optional: adds space between input and button
-
-
-//   const input = document.createElement("input");
-//   input.type = "number";
-//   input.min = "0";
-//   input.step = "0.5";
-//   input.dataset.barberId = selectedBarber.id;
-//   input.dataset.barberName = selectedBarber.name;
-//   input.name = `haircuts_${selectedBarber.name}`;
-//   input.placeholder = "0";
-//   input.id = `other-barber-input-${selectedId}`;
-
-//   // Add remove button
-//   const removeBtn = document.createElement("button");
-//   removeBtn.type = "button";
-//   removeBtn.textContent = "✖";
-//   removeBtn.style.marginLeft = "8px";
-//   removeBtn.style.cursor = "pointer";
-//   removeBtn.style.width = "10%"; // optional: make button smaller
-//   removeBtn.title = "Remove barber";
-//   removeBtn.onclick = () => label.remove();
-
-//   label.appendChild(input);
-//   label.appendChild(removeBtn);
-//   barberListDiv.appendChild(label);
-
-//   select.value = ""; // reset dropdown so user can add more
-// });
-//   }
-// }
-
-
 // Add these improvements to your existing app.js
 
 function populateBarberInputs(shopName) {
@@ -517,4 +429,54 @@ function showFeedback(message, type = 'success') {
       feedback.style.display = 'none';
     }, 3000);
   }
+}
+
+function showConfirmationModal(rowsToInsert) {
+  const modal = document.getElementById("confirmation-modal");
+  const summaryDiv = document.getElementById("confirmation-summary");
+  modal.style.display = "flex";
+
+  // Build summary HTML
+  summaryDiv.innerHTML = `
+    <strong>Date:</strong> ${document.getElementById("date").value}<br>
+    <strong>Cash Total:</strong> £${document.getElementById("cash-total").value}<br>
+    <strong>Cash Float:</strong> £${document.getElementById("cash-float").value}<br>
+    <strong>Notes:</strong> ${document.getElementById("notes").value || "-"}<br>
+    <hr>
+    <strong>Barber Haircuts:</strong>
+    <ul style="margin:0; padding-left:1.2em;">
+      ${rowsToInsert.map(r => `<li>${r.barber_id ? getBarberNameById(r.barber_id) : r.barberName}: <strong>${r.haircuts}</strong></li>`).join("")}
+    </ul>
+  `;
+
+  // Button handlers
+  document.getElementById("confirm-no").onclick = () => {
+    modal.style.display = "none";
+  };
+
+  document.getElementById("confirm-yes").onclick = async () => {
+    modal.style.display = "none";
+    // Final submit to Supabase
+    const { data, error } = await supabaseClient.from('daily_logs').insert(rowsToInsert);
+    const feedback = document.getElementById("form-feedback");
+    if (error) {
+      feedback.textContent = "Error saving data. Check console.";
+      feedback.style.color = "red";
+      return;
+    }
+    feedback.style.color = "green";
+    feedback.textContent = "Form submitted!";
+    dailyForm.reset();
+    document.getElementById("date").value = new Date().toISOString().slice(0,10);
+    setTimeout(() => { feedback.textContent = ""; feedback.style.color = ""; }, 2000);
+  };
+}
+
+// Helper to get barber name by id (from barbersByShopMap)
+function getBarberNameById(id) {
+  for (const shop in barbersByShopMap) {
+    const found = barbersByShopMap[shop].find(b => b.id == id);
+    if (found) return found.name;
+  }
+  return "Unknown";
 }
