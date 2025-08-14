@@ -1,0 +1,120 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BarberSmiths Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="login-view" class="view-container">
+    <div class="login-wrapper">
+      <img src="https://placehold.co/80x80?text=BS" alt="BarberSmiths Logo">
+      <h1>BarberSmiths</h1>
+      <p>End of day reporting system</p>
+      
+      <div id="login-feedback" class="feedback" style="display: none;"></div>
+      
+      <div style="max-width: 300px; margin: 0 auto; text-align: left;">
+        <label>
+          <span class="label-text">Select Shop</span>
+          <select id="shop-select">
+            <option value="islington">Islington</option>
+            <option value="marylebone">Marylebone</option>
+            <option value="shoreditch">Shoreditch</option>
+            <option value="richmond">Richmond</option>
+          </select>
+        </label>
+        
+        <label>
+          <span class="label-text">Password</span>
+          <input type="password" id="password" placeholder="Enter your password">
+        </label>
+        
+        <button id="login-btn" style="width: 100%; margin-top: 1rem;">
+          Login
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Form -->
+  <div id="form-view" class="view-container" style="display:none;">
+    <div class="form-header">
+      <h2>End of Day Report</h2>
+      <button id="logout-btn-form" class="btn-secondary">Logout</button>
+    </div>
+    
+    <form id="daily-form">
+      <div id="form-feedback" class="feedback" style="display: none;"></div>
+      
+      <!-- Basic Info Section -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        <div class="form-grid">
+          <label>
+            <span class="label-text">Date</span>
+            <input type="date" id="date" required>
+          </label>
+          <label>
+            <span class="label-text">Cash Total (£)</span>
+            <input type="number" id="cash-total" step="0.01" placeholder="0.00" required>
+          </label>
+          <label>
+            <span class="label-text">Cash Float (£)</span>
+            <input type="number" id="cash-float" step="0.01" placeholder="0.00" required>
+          </label>
+        </div>
+        <label>
+          <span class="label-text">Notes (Optional)</span>
+          <textarea id="notes" rows="3" placeholder="Any additional notes..."></textarea>
+        </label>
+      </div>
+
+      <!-- Barber Haircuts Section -->
+      <div class="form-section">
+        <h3>Haircut Count</h3>
+        <div id="barber-list" class="barber-grid">
+          <!-- Barber inputs will be populated here -->
+        </div>
+        
+        <div class="other-barber-section">
+          <label>
+            <span class="label-text">Add Barber from Another Shop</span>
+            <select id="other-barber-select">
+              <option value="">Select a barber...</option>
+            </select>
+          </label>
+          <div id="other-barbers-list">
+            <!-- Other barber inputs will appear here -->
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-success" style="width: 100%;">
+        📝 Submit Report
+      </button>
+    </form>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="admin-view" class="view-container" style="display:none;">
+    <div class="admin-header">
+      <h2>Admin Dashboard</h2>
+      <button id="logout-btn-admin" class="btn-secondary">Logout</button>
+    </div>
+    
+    <!-- Admin content will be populated by JS -->
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
