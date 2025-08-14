@@ -454,22 +454,25 @@ function showConfirmationModal(rowsToInsert) {
     modal.style.display = "none";
   };
 
-  document.getElementById("confirm-yes").onclick = async () => {
-    modal.style.display = "none";
-    // Final submit to Supabase
-    const { data, error } = await supabaseClient.from('daily_logs').insert(rowsToInsert);
-    const feedback = document.getElementById("form-feedback");
-    if (error) {
-      feedback.textContent = "Error saving data. Check console.";
-      feedback.style.color = "red";
-      return;
-    }
-    feedback.style.color = "green";
-    feedback.textContent = "Form submitted!";
-    dailyForm.reset();
-    document.getElementById("date").value = new Date().toISOString().slice(0,10);
-    setTimeout(() => { feedback.textContent = ""; feedback.style.color = ""; }, 2000);
+document.getElementById("confirm-yes").onclick = async () => {
+  modal.style.display = "none";
+  // Final submit to Supabase
+  const { data, error } = await supabaseClient.from('daily_logs').insert(rowsToInsert);
+  if (error) {
+    feedback.textContent = "Error saving data. Check console.";
+    feedback.style.color = "red";
+    return;
+  }
+  dailyForm.reset();
+  document.getElementById("date").value = new Date().toISOString().slice(0,10);
+
+  // Show success modal
+  const successModal = document.getElementById("success-modal");
+  successModal.style.display = "flex";
+  document.getElementById("success-ok").onclick = () => {
+    successModal.style.display = "none";
   };
+};
 }
 
 // Helper to get barber name by id (from barbersByShopMap)
