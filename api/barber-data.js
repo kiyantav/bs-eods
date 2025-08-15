@@ -18,6 +18,18 @@ module.exports = async function handler(req, res) {
 
   const { password } = req.body;
 
+   // Add these logs for debugging
+  console.log("Received password:", password);
+  console.log("Expected ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
+  console.log("Expected BARBER_PASSWORD:", process.env.BARBER_PASSWORD);
+
+  // Validate password
+  if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
+    console.log("Password validation failed");
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
   // Validate password
   if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
     res.status(401).json({ error: "Unauthorized" });
