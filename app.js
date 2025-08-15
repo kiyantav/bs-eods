@@ -7,6 +7,11 @@ const adminView = document.getElementById("admin-view");
 const barberListDiv = document.getElementById("barber-list");
 const dailyForm = document.getElementById("daily-form");
 
+window.addEventListener("load", () => {
+  const loadingModal = document.getElementById("loading-modal");
+  loadingModal.style.display = "none"; // Hide the spinner
+});
+
 // Remember password logic
 if (localStorage.getItem("bs_password")) {
   passwordInput.value = localStorage.getItem("bs_password");
