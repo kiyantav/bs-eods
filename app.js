@@ -29,6 +29,11 @@ const adminView = document.getElementById("admin-view");
 const barberListDiv = document.getElementById("barber-list");
 const dailyForm = document.getElementById("daily-form");
 
+if (localStorage.getItem("bs_password")) {
+  passwordInput.value = localStorage.getItem("bs_password");
+  document.getElementById("remember-password").checked = true;
+}
+
 let demoLogs = [];
 
 const shopsMap = {};
