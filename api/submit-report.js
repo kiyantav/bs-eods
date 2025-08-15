@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
   }
 
   // Connect to Supabase
-  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_SERVICE_KEY);
+  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
 
   // Insert report data
   const { data, error } = await supabase.from("daily_logs").insert(reportData);
