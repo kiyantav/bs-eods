@@ -45,10 +45,14 @@ loginBtn.addEventListener("click", async () => {
   loginFeedback.className = "feedback error";
   passwordInput.classList.remove("input-error");
 
+  // Show the spinner before any validation
+  loadingModal.style.display = "flex";
+
   if (!password) {
     loginFeedback.textContent = "Please enter your password.";
     loginFeedback.style.display = "block";
     passwordInput.classList.add("input-error");
+    loadingModal.style.display = "none"; // Hide the spinner if validation fails
     return;
   }
 
@@ -58,10 +62,9 @@ loginBtn.addEventListener("click", async () => {
     localStorage.removeItem("bs_password");
   }
 
-  // Hide feedback and show the loading spinner
+  // Hide feedback before starting login
   loginFeedback.style.display = "none";
   loginFeedback.textContent = "";
-  loadingModal.style.display = "flex"; // Show the spinner
 
   try {
     const response = await fetch("/api/barber-data", {
@@ -115,7 +118,7 @@ loginBtn.addEventListener("click", async () => {
     loginFeedback.style.display = "block";
     passwordInput.classList.add("input-error");
   } finally {
-    loadingModal.style.display = "none"; // Hide the spinner when done
+    loadingModal.style.display = "none"; // Always hide the spinner
   }
 });
 
