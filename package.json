@@ -1,20 +1,10 @@
 {
   "name": "barbersmiths-reporting",
   "version": "1.0.0",
-  "description": "BarberSmiths daily reporting system",
-  "main": "index.html",
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required'",
-    "start": "vercel dev"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
   },
-  "devDependencies": {
-    "vercel": "^33.0.0"
-  },
   "engines": {
-    "node": "18.x"
+    "node": "18"
   }
 }
