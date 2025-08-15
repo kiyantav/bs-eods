@@ -48,12 +48,7 @@ body {
 
 /* Login View */
 
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 
 .login-wrapper {
   padding: 3rem;
@@ -62,19 +57,24 @@ body {
 }
 
 .login-wrapper img {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 2rem;
+  width: 120px;
+  height: 120px;
+/*   margin-bottom: 2rem; */
   border-radius: 50%;
-  border: 3px solid var(--secondary-dark);
+/*   border: 3px solid var(--secondary-dark); */
 }
 
 .login-wrapper h1 {
   font-size: 2rem;
   font-weight: 700;
   color: var(--secondary-dark);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
+  margin-top: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.login-wrapper p {
+ margin-top: 0;
 }
 
 .login-wrapper p {
@@ -339,7 +339,7 @@ table {
   border-collapse: collapse;
   background: var(--primary-dark);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: var(--shadow);
   margin-bottom: 2rem;
   border: 1px solid var(--border-dark);
