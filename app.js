@@ -544,17 +544,16 @@ let demoLogs = [];
 let shopsMap = {};
 let barbersByShopMap = {}; 
 
-// Login logic
-loginBtn.addEventListener("click", async () => {
+// Login logicloginBtn.addEventListener("click", async () => {
   const shop = shopSelect.value;
   const password = passwordInput.value;
   const loginFeedback = document.getElementById("login-feedback");
-  loginFeedback.style.display = "block";
   loginFeedback.className = "feedback error";
   passwordInput.classList.remove("input-error");
 
-  if (!password) {
+   if (!password) {
     loginFeedback.textContent = "Please enter your password.";
+    loginFeedback.style.display = "block";
     passwordInput.classList.add("input-error");
     return;
   }
@@ -564,6 +563,11 @@ loginBtn.addEventListener("click", async () => {
   } else {
     localStorage.removeItem("bs_password");
   }
+
+   // Hide feedback before starting login
+  loginFeedback.style.display = "none";
+  loginFeedback.textContent = "";
+
 
   // Try authentication via backend
   try {
@@ -575,6 +579,9 @@ loginBtn.addEventListener("click", async () => {
     const result = await response.json();
 
     if (result.success) {
+    loginFeedback.style.display = "none";
+      loginFeedback.textContent = "";
+      loginFeedback.style.color = "";
       // Store shop/barber data
       shopsMap = {};
       barbersByShopMap = {};
@@ -587,9 +594,7 @@ loginBtn.addEventListener("click", async () => {
         barbersByShopMap[shopName].push({ id: b.id, name: b.name });
       });
 
-      loginFeedback.style.display = "none";
-      loginFeedback.textContent = "";
-      loginFeedback.style.color = ""; // Reset color if you set it elsewhere
+    
 
       // Check if admin
       const adminResponse = await fetch("/api/admin-data", {
@@ -611,10 +616,12 @@ loginBtn.addEventListener("click", async () => {
     } else {
       loginFeedback.textContent = "Incorrect password. Please try again.";
       passwordInput.classList.add("input-error");
+     loginFeedback.style.display = "block";
     }
   } catch (error) {
     loginFeedback.textContent = "Connection error. Please try again.";
     passwordInput.classList.add("input-error");
+    loginFeedback.style.display = "block";
   }
 });
 
