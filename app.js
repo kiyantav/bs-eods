@@ -395,7 +395,7 @@ function renderAdminDashboard() {
       <h2>Admin Dashboard</h2>
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     </div>
-    <div style="padding: 2rem;">
+    <div style="">
       <div class="filters" style="display:flex; gap:1rem; margin-bottom:2rem;">
         <div class="filter-group">
           <label>Filter by Shop:
