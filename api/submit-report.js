@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
   const { password, reportData } = req.body;
 
-  // Validate password (use env var for security)
+  // Validate password (use env vars for security)
   if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
     res.status(401).json({ error: "Unauthorized" });
     return;
