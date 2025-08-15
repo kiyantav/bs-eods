@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+const { createClient } = require("@supabase/supabase-js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -8,14 +8,14 @@ export default async function handler(req, res) {
 
   const { password, reportData } = req.body;
 
-  // Validate password (use env vars for security)
+  // Validate password
   if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
-  // Connect to Supabase using service key (env var)
-  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
+  // Connect to Supabase
+  const supabase = createClient(process.env.VITA_SUPABASE_URL, process.env.VITA_SUPABASE_SERVICE_KEY);
 
   // Insert report data
   const { data, error } = await supabase.from("daily_logs").insert(reportData);
@@ -26,4 +26,4 @@ export default async function handler(req, res) {
   }
 
   res.status(200).json({ success: true, data });
-}
+};
