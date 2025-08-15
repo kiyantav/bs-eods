@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const supabase = createClient(process.env.SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
+  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
 
   try {
     // Fetch shops and barbers for form population
