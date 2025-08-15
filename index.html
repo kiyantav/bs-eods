@@ -34,7 +34,9 @@
        <label style="position:relative;">
         <span class="label-text">Password</span>
         <input type="password" id="password" placeholder="Enter your password" style="padding-right:40px;">
-        <button type="button" id="toggle-password" style="position:absolute; right:8px; top:32px; background:none; border:none; color:var(--secondary-dark); font-size:1.2rem; cursor:pointer;">👁️</button>
+         <button type="button" id="toggle-password" style="position:absolute; right:8px; top:32px; background:none; border:none; color:var(--secondary-dark); font-size:1.2rem; cursor:pointer;">
+        <i class="fi fi-ss-eye"></i>
+        </button>
       </label>
 
         <label style="display:flex; align-items:center; gap:0.5rem;">
@@ -149,8 +151,15 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
   passwordInput.value = "";
 });
 
-    document.getElementById("toggle-password").addEventListener("click", () => {
-  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+const togglePasswordBtn = document.getElementById("toggle-password");
+togglePasswordBtn.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    togglePasswordBtn.innerHTML = '<i class="fi fi-sr-eye-crossed"></i>';
+  } else {
+    passwordInput.type = "password";
+    togglePasswordBtn.innerHTML = '<i class="fi fi-ss-eye"></i>';
+  }
 });
     
   </script>
