@@ -40,10 +40,12 @@ loginBtn.addEventListener("click", async () => {
   const shop = shopSelect.value;
   const password = passwordInput.value;
   const loginFeedback = document.getElementById("login-feedback");
+  const loadingModal = document.getElementById("loading-modal"); // Reference the spinner modal
+
   loginFeedback.className = "feedback error";
   passwordInput.classList.remove("input-error");
 
-   if (!password) {
+  if (!password) {
     loginFeedback.textContent = "Please enter your password.";
     loginFeedback.style.display = "block";
     passwordInput.classList.add("input-error");
@@ -56,12 +58,11 @@ loginBtn.addEventListener("click", async () => {
     localStorage.removeItem("bs_password");
   }
 
-   // Hide feedback before starting login
+  // Hide feedback and show the loading spinner
   loginFeedback.style.display = "none";
   loginFeedback.textContent = "";
+  loadingModal.style.display = "flex"; // Show the spinner
 
-
-  // Try authentication via backend
   try {
     const response = await fetch("/api/barber-data", {
       method: "POST",
@@ -71,13 +72,14 @@ loginBtn.addEventListener("click", async () => {
     const result = await response.json();
 
     if (result.success) {
-    loginFeedback.style.display = "none";
+      loginFeedback.style.display = "none";
       loginFeedback.textContent = "";
       loginFeedback.style.color = "";
+
       // Store shop/barber data
       shopsMap = {};
       barbersByShopMap = {};
-      
+
       result.shops.forEach(s => shopsMap[s.name] = s.id);
       result.barbers.forEach(b => {
         const shopEntry = Object.entries(shopsMap).find(([, id]) => id === b.shop_id);
@@ -105,13 +107,15 @@ loginBtn.addEventListener("click", async () => {
       }
     } else {
       loginFeedback.textContent = "Incorrect password. Please try again.";
+      loginFeedback.style.display = "block";
       passwordInput.classList.add("input-error");
-     loginFeedback.style.display = "block";
     }
   } catch (error) {
     loginFeedback.textContent = "Connection error. Please try again.";
-    passwordInput.classList.add("input-error");
     loginFeedback.style.display = "block";
+    passwordInput.classList.add("input-error");
+  } finally {
+    loadingModal.style.display = "none"; // Hide the spinner when done
   }
 });
 
