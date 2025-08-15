@@ -432,6 +432,11 @@ tbody tr:nth-child(even) {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+.input-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 2px rgba(239,68,68,0.3);
+}
+
 /* Scrollbar Styling for Dark Theme */
 ::-webkit-scrollbar {
   width: 8px;
