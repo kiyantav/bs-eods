@@ -5,10 +5,6 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
- console.log("VITE_SUPABASE_URL:", process.env.VITE_SUPABASE_URL);
-  console.log("VITE_SUPABASE_SERVICE_KEY:", process.env.VITE_SUPABASE_SERVICE_KEY);
-  console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
-  console.log("BARBER_PASSWORD:", process.env.BARBER_PASSWORD);
   // Check for required environment variables
   if (!process.env.VITE_SUPABASE_URL) {
     res.status(500).json({ error: "VITE_SUPABASE_URL environment variable is missing" });
@@ -16,7 +12,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (!process.env.VITA_SUPABASE_SERVICE_KEY) {
-    res.status(500).json({ error: "VITE_SUPABASE_SERVICE_KEY environment variable is missing" });
+    res.status(500).json({ error: "VITE_SUPABASE_KEY environment variable is missing" });
     return;
   }
 
@@ -29,7 +25,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_SERVICE_KEY);
+    const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
 
     // Fetch shops and barbers
     const { data: shops, error: shopsError } = await supabase
