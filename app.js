@@ -204,6 +204,7 @@ function renderAdminDashboard() {
   const adminView = document.getElementById("admin-view");
   adminView.innerHTML = `
     <p>Admin Dashboard<p>
+    <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     <label>Filter by Shop:
       <select id="admin-shop-filter">
         <option value="">All</option>
