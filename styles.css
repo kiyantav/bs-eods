@@ -371,22 +371,45 @@ tbody tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* Responsive table for screens < 850px */
 @media (max-width: 850px) {
-  table {
+  table, thead, tbody, th, td, tr {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  thead, tbody, th, td, tr {
-    display: block;
   }
   thead {
-    /* Optional: keep header sticky */
-    position: sticky;
-    top: 0;
+    display: none;
+  }
+  tbody tr {
+    margin-bottom: 1.5rem;
     background: var(--primary-light);
-    z-index: 2;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1rem;
+  }
+  td {
+    position: relative;
+    padding-left: 120px;
+    min-height: 32px;
+    border: none;
+    border-bottom: 1px solid var(--border-dark);
+    color: var(--white);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  td:last-child {
+    border-bottom: none;
+  }
+  /* Add label before each cell */
+  td[data-label]:before {
+    content: attr(data-label) ": ";
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    font-weight: 600;
+    color: var(--secondary-dark);
+    width: 110px;
+    white-space: nowrap;
   }
 }
 
