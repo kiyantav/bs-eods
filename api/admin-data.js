@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_SERVICE_KEY);
+  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
 
   try {
     // Fetch logs with joins
