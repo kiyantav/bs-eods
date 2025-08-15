@@ -487,6 +487,13 @@ tbody tr:nth-child(even) {
   #form-view {
     padding: 1.5rem;
   }
+  .other-barber-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+   .other-barber-item .remove-btn {
+     width: 100%;
 }
 
 /* Additional dark theme enhancements */
