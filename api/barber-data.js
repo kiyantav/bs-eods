@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+const { createClient } = require("@supabase/supabase-js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -14,10 +14,10 @@ export default async function handler(req, res) {
     return;
   }
 
-  const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_KEY);
+  const supabase = createClient(process.env.VITA_SUPABASE_URL, process.env.VITA_SUPABASE_SERVICE_KEY);
 
   try {
-    // Fetch shops and barbers for form population
+    // Fetch shops and barbers
     const { data: shops, error: shopsError } = await supabase
       .from('shops')
       .select('id,name');
@@ -39,4 +39,4 @@ export default async function handler(req, res) {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
