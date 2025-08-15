@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (!process.env.VITA_SUPABASE_SERVICE_KEY) {
+  if (!process.env.VITA_SUPABASE_KEY) {
     res.status(500).json({ error: "VITE_SUPABASE_KEY environment variable is missing" });
     return;
   }
