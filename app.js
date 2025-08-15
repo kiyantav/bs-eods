@@ -324,6 +324,12 @@ loginBtn.addEventListener("click", () => {
     return;
   }
 
+  if (document.getElementById("remember-password").checked) {
+    localStorage.setItem("bs_password", passwordInput.value);
+  } else {
+    localStorage.removeItem("bs_password");
+  }
+
   if (password === passwords.admin) {
     loginFeedback.style.display = "none";
     openAdminView();
