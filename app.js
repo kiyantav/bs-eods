@@ -551,12 +551,7 @@ let barbersByShopMap = {};
   loginFeedback.className = "feedback error";
   passwordInput.classList.remove("input-error");
 
-   if (!password) {
-    loginFeedback.textContent = "Please enter your password.";
-    loginFeedback.style.display = "block";
-    passwordInput.classList.add("input-error");
-    return;
-  }
+   
 
   if (document.getElementById("remember-password").checked) {
     localStorage.setItem("bs_password", passwordInput.value);
