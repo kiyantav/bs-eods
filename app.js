@@ -588,6 +588,8 @@ loginBtn.addEventListener("click", async () => {
       });
 
       loginFeedback.style.display = "none";
+      loginFeedback.textContent = "";
+      loginFeedback.style.color = ""; // Reset color if you set it elsewhere
 
       // Check if admin
       const adminResponse = await fetch("/api/admin-data", {
