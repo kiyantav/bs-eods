@@ -2,15 +2,6 @@
   "functions": {
     "api/*.js": {
       "runtime": "nodejs18.x"
-    },
-    "api/submit-report.js": {
-      "runtime": "@vercel/node"
-    },
-    "api/admin-data.js": {
-      "runtime": "@vercel/node"
-    },
-    "api/barber-data.js": {
-      "runtime": "@vercel/node"
     }
   },
   "rewrites": [
