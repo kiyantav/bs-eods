@@ -5,7 +5,10 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
-
+ console.log("VITE_SUPABASE_URL:", process.env.VITE_SUPABASE_URL);
+  console.log("VITE_SUPABASE_SERVICE_KEY:", process.env.VITE_SUPABASE_SERVICE_KEY);
+  console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
+  console.log("BARBER_PASSWORD:", process.env.BARBER_PASSWORD);
   // Check for required environment variables
   if (!process.env.VITE_SUPABASE_URL) {
     res.status(500).json({ error: "VITE_SUPABASE_URL environment variable is missing" });
