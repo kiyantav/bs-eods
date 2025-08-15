@@ -7,13 +7,13 @@ module.exports = async function handler(req, res) {
   }
 
   // Check for required environment variables
-  if (!process.env.VITA_SUPABASE_URL) {
-    res.status(500).json({ error: "VITA_SUPABASE_URL environment variable is missing" });
+  if (!process.env.VITE_SUPABASE_URL) {
+    res.status(500).json({ error: "VITE_SUPABASE_URL environment variable is missing" });
     return;
   }
 
   if (!process.env.VITA_SUPABASE_SERVICE_KEY) {
-    res.status(500).json({ error: "VITA_SUPABASE_SERVICE_KEY environment variable is missing" });
+    res.status(500).json({ error: "VITE_SUPABASE_SERVICE_KEY environment variable is missing" });
     return;
   }
 
