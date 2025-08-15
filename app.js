@@ -271,14 +271,14 @@ function updateAdminTable() {
     .forEach(log => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${log.date}</td>
-        <td>${log.shop}</td>
-        <td>${log.barberName}</td>
-        <td>${log.haircuts}</td>
-        <td>£${calculateCommission(log.haircuts)}</td>
-        <td>${log.cashTotal}</td>
-        <td>${log.cashFloat}</td>
-        <td>${log.notes}</td>
+        <td data-label="Date">${log.date}</td>
+        <td data-label="Shop">${log.shop}</td>
+        <td data-label="Barber">${log.barberName}</td>
+        <td data-label="Haircuts">${log.haircuts}</td>
+        <td data-label="Commission (£)">£${calculateCommission(log.haircuts)}</td>
+        <td data-label="Cash Total">${log.cashTotal}</td>
+        <td data-label="Cash Float">${log.cashFloat}</td>
+        <td data-label="Notes">${log.notes}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -296,17 +296,17 @@ function updateWeeklySummary() {
 
   const summary = calculateWeeklySummary(filteredLogs);
 
-  summary.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.weekStart}</td>
-      <td>${row.shop}</td>
-      <td>${row.barberName}</td>
-      <td>${row.totalHaircuts}</td>
-      <td>£${row.totalCommission}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+ summary.forEach(row => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td data-label="Week Start">${row.weekStart}</td>
+    <td data-label="Shop">${row.shop}</td>
+    <td data-label="Barber">${row.barberName}</td>
+    <td data-label="Total Haircuts">${row.totalHaircuts}</td>
+    <td data-label="Total Commission (£)">£${row.totalCommission}</td>
+  `;
+  tbody.appendChild(tr);
+});
 }
 
 
