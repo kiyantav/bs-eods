@@ -31,10 +31,16 @@
           </select>
         </label>
         
-        <label>
-          <span class="label-text">Password</span>
-          <input type="password" id="password" placeholder="Enter your password">
-        </label>
+       <label style="position:relative;">
+        <span class="label-text">Password</span>
+        <input type="password" id="password" placeholder="Enter your password" style="padding-right:40px;">
+        <button type="button" id="toggle-password" style="position:absolute; right:8px; top:32px; background:none; border:none; color:var(--secondary-dark); font-size:1.2rem; cursor:pointer;">👁️</button>
+      </label>
+
+        <label style="display:flex; align-items:center; gap:0.5rem;">
+        <input type="checkbox" id="remember-password" style="width:18px; height:18px;">
+        <span style="font-size:0.95rem;">Remember password</span>
+      </label>
         
         <button id="login-btn" style="width: 100%; margin-top: 1rem;">
           Login
@@ -142,6 +148,10 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
   adminView.style.display = "none";
   loginView.style.display = "block";
   passwordInput.value = "";
+});
+
+    document.getElementById("toggle-password").addEventListener("click", () => {
+  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
 });
     
   </script>
