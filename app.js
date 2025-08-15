@@ -314,23 +314,28 @@ loginBtn.addEventListener("click", () => {
   const shop = shopSelect.value;
   const password = passwordInput.value;
   const loginFeedback = document.getElementById("login-feedback");
-  loginFeedback.textContent = "";
+  loginFeedback.style.display = "block";
+  loginFeedback.className = "feedback error";
+  passwordInput.classList.remove("input-error");
 
   if (!password) {
     loginFeedback.textContent = "Please enter your password.";
+    passwordInput.classList.add("input-error");
     return;
   }
 
   if (password === passwords.admin) {
-    // use openAdminView so logs are fetched before rendering the dashboard
+    loginFeedback.style.display = "none";
     openAdminView();
   } else if (password === passwords.barber) {
+    loginFeedback.style.display = "none";
     loginView.style.display = "none";
     formView.style.display = "block";
     populateBarberInputs(shop);
     document.getElementById("date").value = new Date().toISOString().slice(0,10);
   } else {
     loginFeedback.textContent = "Incorrect password. Please try again.";
+    passwordInput.classList.add("input-error");
   }
 });
 // Add these improvements to your existing app.js
