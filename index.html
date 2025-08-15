@@ -153,17 +153,7 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
   passwordInput.value = "";
 });
 
-const togglePasswordBtn = document.getElementById("toggle-password");
-togglePasswordBtn.addEventListener("click", () => {
-  if (passwordInput.type === "password") {
-    passwordInput.type = "text";
-    togglePasswordBtn.innerHTML = '<i class="fi fi-sr-eye-crossed"></i>';
-  } else {
-    passwordInput.type = "password";
-    togglePasswordBtn.innerHTML = '<i class="fi fi-ss-eye"></i>';
-  }
-});
-    
+
   </script>
   <script src="app.js"></script>
 </body>
