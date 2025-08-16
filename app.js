@@ -441,7 +441,12 @@ function renderAdminDashboard() {
       <h2>Admin Dashboard</h2>
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     </div>
-    <div style="padding: 2rem;">
+    <div style="">
+     <div class="summary-metrics" style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+        <div>Total Haircuts: <span id="total-haircuts">0</span></div>
+        <div>Total Commission (£): <span id="total-commission">0</span></div>
+        <div>Total Cash (£): <span id="total-cash">0</span></div>
+      </div>
       <div class="filters" style="display:flex; gap:1rem; margin-bottom:2rem;">
         <div class="filter-group">
           <label>Filter by Shop:
@@ -510,6 +515,7 @@ function renderAdminDashboard() {
     </div>
   `;
   
+  updateSummaryMetrics(demoLogs);
   updateAdminTable();
   updateWeeklySummary();
   updateCashSummary();
@@ -532,6 +538,26 @@ function renderAdminDashboard() {
     passwordInput.value = "";
   });
 }
+
+function updateSummaryMetrics(logs) {
+  const totalHaircuts = logs.reduce((sum, log) => sum + log.haircuts, 0);
+  const totalCommission = logs.reduce((sum, log) => sum + calculateCommission(log.haircuts), 0);
+  const totalCash = logs.reduce((sum, log) => sum + log.cashTotal, 0);
+
+  document.getElementById("total-haircuts").textContent = totalHaircuts;
+  document.getElementById("total-commission").textContent = `£${totalCommission.toFixed(2)}`;
+  document.getElementById("total-cash").textContent = `£${totalCash.toFixed(2)}`;
+}
+
+function filterLogsByShopAndBarber() {
+  const shopFilter = document.getElementById("admin-shop-filter").value;
+  const barberFilter = document.getElementById("admin-barber-filter").value.toLowerCase();
+
+  return demoLogs.filter(log => {
+    const matchesShop = !shopFilter || log.shop === shopFilter;
+    const matchesBarber = !barberFilter || log.barberName.toLowerCase().includes(barberFilter);
+    return matchesShop && matchesBarber;
+  });
 
 function updateAdminTable() {
   const shopFilter = document.getElementById("admin-shop-filter").value;
