@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
 
     const { data: barbers, error: barbersError } = await supabase
       .from('barbers')
-      .select('id,name,shop_id, day_rate');
+      .select('id,name,shop_id,day_rate');
 
     if (barbersError) throw barbersError;
 
