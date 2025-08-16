@@ -364,13 +364,13 @@ function populateBarberInputs(shopName) {
   populateOtherBarberSelect(shopName);
 }
 
-function updateCashSummary() {
+function updateCashSummary(logs = demoLogs) {
   const shopFilter = document.getElementById("admin-shop-filter").value;
   const tbody = document.querySelector("#cash-summary-table tbody");
   tbody.innerHTML = "";
 
   // Group cash data by date and shop, taking the first entry only
-  const groupedCashData = demoLogs.reduce((acc, log) => {
+  const groupedCashData = logs.reduce((acc, log) => {
     if (shopFilter && log.shop !== shopFilter) return acc;
 
     const key = `${log.date}_${log.shop}`;
@@ -386,7 +386,6 @@ function updateCashSummary() {
     return acc;
   }, {});
 
-  // Populate the table with grouped data
   Object.values(groupedCashData).forEach(entry => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -610,13 +609,13 @@ dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
 document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
 
-function updateAdminTable() {
+function updateAdminTable(logs = demoLogs) {
   const shopFilter = document.getElementById("admin-shop-filter").value;
   const barberFilter = document.getElementById("admin-barber-filter").value.toLowerCase();
   const tbody = document.querySelector("#admin-log-table tbody");
   tbody.innerHTML = "";
 
-  demoLogs
+  logs
     .filter(log => (!shopFilter || log.shop === shopFilter))
     .filter(log => (!barberFilter || log.barberName.toLowerCase().includes(barberFilter)))
     .forEach(log => {
@@ -633,17 +632,12 @@ function updateAdminTable() {
     });
 }
 
-function updateWeeklySummary() {
-  const shopFilter = document.getElementById("admin-shop-filter").value;
-  const barberFilter = document.getElementById("admin-barber-filter").value.toLowerCase();
+
+function updateWeeklySummary(logs = demoLogs) {
   const tbody = document.querySelector("#weekly-summary-table tbody");
   tbody.innerHTML = "";
 
-  const filteredLogs = demoLogs
-    .filter(log => (!shopFilter || log.shop === shopFilter))
-    .filter(log => (!barberFilter || log.barberName.toLowerCase().includes(barberFilter)));
-
-  const summary = calculateWeeklySummary(filteredLogs);
+  const summary = calculateWeeklySummary(logs);
 
   summary.forEach(row => {
     const tr = document.createElement("tr");
