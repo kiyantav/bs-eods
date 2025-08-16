@@ -451,7 +451,6 @@ function renderAdminDashboard() {
           <thead>
             <tr>
               <th>Week Start</th>
-              <th>Shop</th>
               <th>Barber</th>
               <th>Total Haircuts</th>
               <th>Total Commission (£)</th>
@@ -557,7 +556,6 @@ function updateWeeklySummary() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td data-label="Week Start">${row.weekStart}</td>
-      <td data-label="Shop">${row.shop}</td>
       <td data-label="Barber">${row.barberName}</td>
       <td data-label="Total Haircuts">${row.totalHaircuts}</td>
       <td data-label="Total Commission (£)">£${row.totalCommission}</td>
