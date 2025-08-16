@@ -44,7 +44,7 @@ module.exports = async function handler(req, res) {
       success: true, 
       shops: shops || [], 
       barbers: barbers || [], 
-      dayRate: b.day_rate || [] 
+      dayRate: day_rate || [] 
     });
 
   } catch (error) {
