@@ -93,7 +93,7 @@ loginBtn.addEventListener("click", async () => {
         const shopEntry = Object.entries(shopsMap).find(([, id]) => id === b.shop_id);
         const shopName = shopEntry ? shopEntry[0] : 'unknown';
         barbersByShopMap[shopName] = barbersByShopMap[shopName] || [];
-        barbersByShopMap[shopName].push({ id: b.id, name: b.name });
+        barbersByShopMap[shopName].push({ id: b.id, name: b.name, dayRate: b.day_rate });
       });
 
       // Check if admin
@@ -303,7 +303,7 @@ function calculateWeeklySummary(logs) {
         totalCommission: 0,
         daysWorked: new Set(), // Track unique days worked
         totalPay: 0,
-        dayRate: barber?.dayRate || 0 
+        dayRate: barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0
       };
     }
     summary[key].totalHaircuts += log.haircuts;
