@@ -471,6 +471,9 @@ function renderAdminDashboard() {
             </select>
           </label>
         </div>
+          <label>Date Range:
+            <input type="text" id="admin-date-range" placeholder="Select date(s)" autocomplete="off">
+        </label>
         <div class="filter-group">
           <label>Filter by Barber:
             <input type="text" id="admin-barber-filter" placeholder="Barber name">
@@ -550,6 +553,18 @@ function renderAdminDashboard() {
     loginView.style.display = "block";
     passwordInput.value = "";
   });
+
+  const dateRangeInput = document.getElementById("admin-date-range");
+  const datepicker = new Datepicker(dateRangeInput, {
+  format: "yyyy-mm-dd",
+  autohide: true,
+  clearBtn: true,
+  todayBtn: true,
+  todayHighlight: true,
+  maxNumberOfDates: 2 // allows single or range selection
+});
+
+dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 }
 
 function updateSummaryMetrics(logs) {
@@ -565,13 +580,35 @@ function updateSummaryMetrics(logs) {
 function filterLogsByShopAndBarber() {
   const shopFilter = document.getElementById("admin-shop-filter").value;
   const barberFilter = document.getElementById("admin-barber-filter").value.toLowerCase();
+  const dateRangePicker = document.getElementById("admin-date-range");
+  let dates = [];
+  if (dateRangePicker && dateRangePicker.value) {
+    dates = dateRangePicker.value.split(",");
+  }
+  const startDate = dates[0]?.trim();
+  const endDate = dates[1]?.trim() || startDate;
 
   return demoLogs.filter(log => {
     const matchesShop = !shopFilter || log.shop === shopFilter;
     const matchesBarber = !barberFilter || log.barberName.toLowerCase().includes(barberFilter);
-    return matchesShop && matchesBarber;
+    const matchesDate = !startDate || (
+      log.date >= startDate && log.date <= endDate
+    );
+    return matchesShop && matchesBarber && matchesDate;
   });
 }
+
+function refreshAdminTables() {
+  const filteredLogs = filterLogsByShopAndBarber();
+  updateSummaryMetrics(filteredLogs);
+  updateAdminTable(filteredLogs);
+  updateWeeklySummary(filteredLogs);
+  updateCashSummary(filteredLogs);
+}
+
+// Add listeners for other filters as well
+document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
+document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
 
 function updateAdminTable() {
   const shopFilter = document.getElementById("admin-shop-filter").value;
