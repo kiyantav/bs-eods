@@ -357,18 +357,37 @@ function updateCashSummary() {
   const tbody = document.querySelector("#cash-summary-table tbody");
   tbody.innerHTML = "";
 
-  demoLogs
-    .filter(log => (!shopFilter || log.shop === shopFilter))
-    .forEach(log => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td data-label="Date">${log.date}</td>
-        <td data-label="Shop">${log.shop}</td>
-        <td data-label="Cash Total (£)">£${log.cashTotal}</td>
-        <td data-label="Cash Float (£)">£${log.cashFloat}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+  // Group cash data by date and shop
+  const groupedCashData = demoLogs.reduce((acc, log) => {
+    if (shopFilter && log.shop !== shopFilter) return acc;
+
+    const key = `${log.date}_${log.shop}`;
+    if (!acc[key]) {
+      acc[key] = {
+        date: log.date,
+        shop: log.shop,
+        cashTotal: 0,
+        cashFloat: 0,
+      };
+    }
+
+    acc[key].cashTotal += log.cashTotal;
+    acc[key].cashFloat += log.cashFloat;
+
+    return acc;
+  }, {});
+
+  // Populate the table with grouped data
+  Object.values(groupedCashData).forEach(entry => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Date">${entry.date}</td>
+      <td data-label="Shop">${entry.shop}</td>
+      <td data-label="Cash Total (£)">£${entry.cashTotal.toFixed(2)}</td>
+      <td data-label="Cash Float (£)">£${entry.cashFloat.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function populateOtherBarberSelect(currentShop) {
