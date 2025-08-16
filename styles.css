@@ -525,3 +525,87 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   appearance: textfield;
 }
+
+/* Vanilla Datepicker Dark Theme Overrides */
+.datepicker-dropdown,
+.datepicker-picker {
+  background: var(--primary-dark) !important;
+  color: var(--white) !important;
+  border: 1px solid var(--border-dark) !important;
+  box-shadow: var(--shadow);
+}
+
+.datepicker-dropdown .datepicker-days .datepicker-cell,
+.datepicker-dropdown .datepicker-months .datepicker-cell,
+.datepicker-dropdown .datepicker-years .datepicker-cell,
+.datepicker-picker .datepicker-cell {
+  background: var(--primary-dark) !important;
+  color: var(--white) !important;
+  border-radius: 6px !important;
+  border: none !important;
+}
+
+.datepicker-picker .datepicker-cell:hover,
+.datepicker-dropdown .datepicker-cell:hover {
+  background: var(--secondary-dark) !important;
+  color: var(--primary-dark) !important;
+}
+
+.datepicker-picker .datepicker-cell.selected,
+.datepicker-dropdown .datepicker-cell.selected {
+  background: var(--success) !important;
+  color: var(--white) !important;
+}
+
+.datepicker-picker .datepicker-cell.today,
+.datepicker-dropdown .datepicker-cell.today {
+  background: var(--secondary-dark) !important;
+  color: var(--primary-dark) !important;
+  font-weight: bold;
+}
+
+.datepicker-picker .datepicker-controls,
+.datepicker-dropdown .datepicker-controls {
+  background: var(--primary-light) !important;
+  color: var(--secondary-dark) !important;
+  border-radius: 6px;
+}
+
+.datepicker-picker .datepicker-title,
+.datepicker-dropdown .datepicker-title {
+  background: var(--primary-light) !important;
+  color: var(--secondary-dark) !important;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.datepicker-picker .datepicker-footer,
+.datepicker-dropdown .datepicker-footer {
+  background: var(--primary-light) !important;
+  color: var(--secondary-dark) !important;
+  border-top: 1px solid var(--border-dark);
+}
+
+.datepicker-picker .datepicker-clear-btn,
+.datepicker-picker .datepicker-today-btn,
+.datepicker-picker .datepicker-close-btn,
+.datepicker-dropdown .datepicker-clear-btn,
+.datepicker-dropdown .datepicker-today-btn,
+.datepicker-dropdown .datepicker-close-btn {
+  background: var(--secondary-dark) !important;
+  color: var(--primary-dark) !important;
+  border-radius: 6px;
+  font-weight: 600;
+  border: none;
+  margin: 0 2px;
+}
+
+.datepicker-picker .datepicker-clear-btn:hover,
+.datepicker-picker .datepicker-today-btn:hover,
+.datepicker-picker .datepicker-close-btn:hover,
+.datepicker-dropdown .datepicker-clear-btn:hover,
+.datepicker-dropdown .datepicker-today-btn:hover,
+.datepicker-dropdown .datepicker-close-btn:hover {
+  background: var(--success) !important;
+  color: var(--white) !important;
+}
