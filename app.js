@@ -300,12 +300,24 @@ function calculateWeeklySummary(logs) {
         barberName: log.barberName,
         weekStart,
         totalHaircuts: 0,
-        totalCommission: 0
+        totalCommission: 0,
+        daysWorked: new Set(), // Track unique days worked
+        totalPay: 0,
+        dayRate: barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0
       };
     }
     summary[key].totalHaircuts += log.haircuts;
     summary[key].totalCommission += calculateCommission(log.haircuts);
+    summary[key].daysWorked.add(log.date); // Add the date to the set
   });
+
+  // Calculate total pay for each barber
+  Object.values(summary).forEach(entry => {
+    const daysWorkedCount = entry.daysWorked.size; // Count unique days worked
+    const dayRatePay = daysWorkedCount * entry.dayRate;
+    entry.totalPay = dayRatePay + entry.totalCommission; // Total pay = day rate pay + commission
+  });
+
   return Object.values(summary);
 }
 
@@ -465,16 +477,17 @@ function renderAdminDashboard() {
           </label>
         </div>
       </div>
-      
-      <h3>Weekly Commission Summary</h3>
+      <h3>Weekly Summary</h3>
       <div class="table-responsive">
         <table id="weekly-summary-table">
           <thead>
             <tr>
-              <th>Week Start</th>
-              <th>Barber</th>
-              <th>Total Haircuts</th>
-              <th>Total Commission (£)</th>
+            <th>Week Start</th>
+            <th>Barber</th>
+            <th>Haircuts</th>
+            <th>Commission</th>
+            <th>Pay</th>
+            <th>Total</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -601,7 +614,9 @@ function updateWeeklySummary() {
       <td data-label="Week Start">${row.weekStart}</td>
       <td data-label="Barber">${row.barberName}</td>
       <td data-label="Total Haircuts">${row.totalHaircuts}</td>
-      <td data-label="Total Commission (£)">£${row.totalCommission}</td>
+      <td data-label="Total Commission (£)">£${row.totalCommission.toFixed(2)}</td>
+      <td data-label="Total Pay (£)">£${(row.totalPay - row.totalCommission).toFixed(2)}</td>
+      <td data-label="Total (Pay + Commission) (£)">£${row.totalPay.toFixed(2)}</td>
     `;
     tbody.appendChild(tr);
   });
