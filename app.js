@@ -303,7 +303,7 @@ function calculateWeeklySummary(logs) {
         totalCommission: 0,
         daysWorked: new Set(), // Track unique days worked
         totalPay: 0,
-        dayRate: barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0
+        dayRate: barber?.dayRate || 0 
       };
     }
     summary[key].totalHaircuts += log.haircuts;
