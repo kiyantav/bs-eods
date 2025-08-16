@@ -606,7 +606,7 @@ function refreshAdminTables() {
   updateCashSummary(filteredLogs);
 }
 
-// Add listeners for other filters as well
+dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
 document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
 
