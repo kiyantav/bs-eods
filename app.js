@@ -357,7 +357,7 @@ function updateCashSummary() {
   const tbody = document.querySelector("#cash-summary-table tbody");
   tbody.innerHTML = "";
 
-  // Group cash data by date and shop
+  // Group cash data by date and shop, taking the first entry only
   const groupedCashData = demoLogs.reduce((acc, log) => {
     if (shopFilter && log.shop !== shopFilter) return acc;
 
@@ -366,13 +366,10 @@ function updateCashSummary() {
       acc[key] = {
         date: log.date,
         shop: log.shop,
-        cashTotal: 0,
-        cashFloat: 0,
+        cashTotal: log.cashTotal,
+        cashFloat: log.cashFloat,
       };
     }
-
-    acc[key].cashTotal += log.cashTotal;
-    acc[key].cashFloat += log.cashFloat;
 
     return acc;
   }, {});
