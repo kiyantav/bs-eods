@@ -43,8 +43,7 @@ module.exports = async function handler(req, res) {
     res.status(200).json({ 
       success: true, 
       shops: shops || [], 
-      barbers: barbers || [], 
-      dayRate: day_rate || [] 
+      barbers: barbers || []
     });
 
   } catch (error) {
