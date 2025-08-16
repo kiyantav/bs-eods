@@ -558,6 +558,7 @@ function filterLogsByShopAndBarber() {
     const matchesBarber = !barberFilter || log.barberName.toLowerCase().includes(barberFilter);
     return matchesShop && matchesBarber;
   });
+}
 
 function updateAdminTable() {
   const shopFilter = document.getElementById("admin-shop-filter").value;
