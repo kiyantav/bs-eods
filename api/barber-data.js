@@ -18,18 +18,6 @@ module.exports = async function handler(req, res) {
 
   const { password } = req.body;
 
-   // Add these logs for debugging
-  console.log("Received password:", password);
-  console.log("Expected ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);
-  console.log("Expected BARBER_PASSWORD:", process.env.BARBER_PASSWORD);
-
-  // Validate password
-  if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
-    console.log("Password validation failed");
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
   // Validate password
   if (password !== process.env.ADMIN_PASSWORD && password !== process.env.BARBER_PASSWORD) {
     res.status(401).json({ error: "Unauthorized" });
@@ -48,14 +36,15 @@ module.exports = async function handler(req, res) {
 
     const { data: barbers, error: barbersError } = await supabase
       .from('barbers')
-      .select('id,name,shop_id');
+      .select('id,name,shop_id, day_rate');
 
     if (barbersError) throw barbersError;
 
     res.status(200).json({ 
       success: true, 
       shops: shops || [], 
-      barbers: barbers || [] 
+      barbers: barbers || [], 
+      dayRate: b.day_rate || [] 
     });
 
   } catch (error) {
