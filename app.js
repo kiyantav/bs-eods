@@ -294,10 +294,9 @@ function calculateWeeklySummary(logs) {
   const summary = {};
   logs.forEach(log => {
     const weekStart = getMonday(log.date);
-    const key = `${log.shop}_${log.barberName}_${weekStart}`;
+    const key = `${log.barberName}_${weekStart}`; // Group by barber name and week start
     if (!summary[key]) {
       summary[key] = {
-        shop: log.shop,
         barberName: log.barberName,
         weekStart,
         totalHaircuts: 0,
@@ -351,6 +350,25 @@ function populateBarberInputs(shopName) {
   });
 
   populateOtherBarberSelect(shopName);
+}
+
+function updateCashSummary() {
+  const shopFilter = document.getElementById("admin-shop-filter").value;
+  const tbody = document.querySelector("#cash-summary-table tbody");
+  tbody.innerHTML = "";
+
+  demoLogs
+    .filter(log => (!shopFilter || log.shop === shopFilter))
+    .forEach(log => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td data-label="Date">${log.date}</td>
+        <td data-label="Shop">${log.shop}</td>
+        <td data-label="Cash Total (£)">£${log.cashTotal}</td>
+        <td data-label="Cash Float (£)">£${log.cashFloat}</td>
+      `;
+      tbody.appendChild(tr);
+    });
 }
 
 function populateOtherBarberSelect(currentShop) {
@@ -407,7 +425,7 @@ function renderAdminDashboard() {
       <h2>Admin Dashboard</h2>
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     </div>
-    <div style="">
+    <div style="padding: 2rem;">
       <div class="filters" style="display:flex; gap:1rem; margin-bottom:2rem;">
         <div class="filter-group">
           <label>Filter by Shop:
@@ -453,9 +471,22 @@ function renderAdminDashboard() {
               <th>Barber</th>
               <th>Haircuts</th>
               <th>Commission (£)</th>
-              <th>Cash Total</th>
-              <th>Cash Float</th>
               <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3>Cash Summary</h3>
+      <div class="table-responsive">
+        <table id="cash-summary-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Shop</th>
+              <th>Cash Total (£)</th>
+              <th>Cash Float (£)</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -466,15 +497,18 @@ function renderAdminDashboard() {
   
   updateAdminTable();
   updateWeeklySummary();
+  updateCashSummary();
 
   document.getElementById("admin-shop-filter").addEventListener("change", () => {
     updateAdminTable();
     updateWeeklySummary();
+    updateCashSummary();
   });
   
   document.getElementById("admin-barber-filter").addEventListener("input", () => {
     updateAdminTable();
     updateWeeklySummary();
+    updateCashSummary();
   });
 
   document.getElementById("logout-btn-admin").addEventListener("click", () => {
@@ -501,8 +535,6 @@ function updateAdminTable() {
         <td data-label="Barber">${log.barberName}</td>
         <td data-label="Haircuts">${log.haircuts}</td>
         <td data-label="Commission (£)">£${calculateCommission(log.haircuts)}</td>
-        <td data-label="Cash Total">£${log.cashTotal}</td>
-        <td data-label="Cash Float">£${log.cashFloat}</td>
         <td data-label="Notes">${log.notes}</td>
       `;
       tbody.appendChild(tr);
