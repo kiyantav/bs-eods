@@ -291,31 +291,37 @@ function getMonday(dateStr) {
 }
 
 function calculateWeeklySummary(logs) {
+  const shopFilter = document.getElementById("admin-shop-filter")?.value;
   const summary = {};
+
   logs.forEach(log => {
     const weekStart = getMonday(log.date);
-    const key = `${log.barberName}_${weekStart}`; // Group by barber name and week start
+    // If filtering by shop, group by barber+shop+week. Otherwise, group by barber+week.
+    const key = shopFilter
+      ? `${log.barberName}_${log.shop}_${weekStart}`
+      : `${log.barberName}_${weekStart}`;
+
     if (!summary[key]) {
       summary[key] = {
         barberName: log.barberName,
+        shop: log.shop,
         weekStart,
         totalHaircuts: 0,
         totalCommission: 0,
-        daysWorked: new Set(), // Track unique days worked
+        daysWorked: new Set(),
         totalPay: 0,
         dayRate: barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0
       };
     }
     summary[key].totalHaircuts += log.haircuts;
     summary[key].totalCommission += calculateCommission(log.haircuts);
-    summary[key].daysWorked.add(log.date); // Add the date to the set
+    summary[key].daysWorked.add(log.date);
   });
 
-  // Calculate total pay for each barber
   Object.values(summary).forEach(entry => {
-    const daysWorkedCount = entry.daysWorked.size; // Count unique days worked
+    const daysWorkedCount = entry.daysWorked.size;
     const dayRatePay = daysWorkedCount * entry.dayRate;
-    entry.totalPay = dayRatePay + entry.totalCommission; // Total pay = day rate pay + commission
+    entry.totalPay = dayRatePay + entry.totalCommission;
   });
 
   return Object.values(summary);
