@@ -569,7 +569,15 @@ dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 function updateSummaryMetrics(logs) {
   const totalHaircuts = logs.reduce((sum, log) => sum + log.haircuts, 0);
   const totalCommission = logs.reduce((sum, log) => sum + calculateCommission(log.haircuts), 0);
-  const totalCash = logs.reduce((sum, log) => sum + log.cashTotal, 0);
+
+    const uniqueCashEntries = {};
+  logs.forEach(log => {
+    const key = `${log.shop}_${log.date}`;
+    if (!uniqueCashEntries[key] && log.cashTotal !== undefined) {
+      uniqueCashEntries[key] = log.cashTotal;
+    }
+  });
+  const totalCash = Object.values(uniqueCashEntries).reduce((sum, val) => sum + val, 0);
 
   document.getElementById("total-haircuts").textContent = totalHaircuts;
   document.getElementById("total-commission").textContent = `£${totalCommission.toFixed(2)}`;
