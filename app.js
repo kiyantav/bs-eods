@@ -656,6 +656,7 @@ function updateAdminTable(logs = demoLogs) {
 
 
 function updateWeeklySummary(logs = demoLogs) {
+  const shopFilter = document.getElementById("admin-shop-filter").value;
   const tbody = document.querySelector("#weekly-summary-table tbody");
   tbody.innerHTML = "";
 
@@ -665,6 +666,7 @@ function updateWeeklySummary(logs = demoLogs) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td data-label="Week Start">${row.weekStart}</td>
+       ${shopFilter ? `<td data-label="Shop">${row.shop}</td>` : ""}
       <td data-label="Barber">${row.barberName}</td>
       <td data-label="Total Haircuts">${row.totalHaircuts}</td>
       <td data-label="Total Commission (£)">£${row.totalCommission.toFixed(2)}</td>
