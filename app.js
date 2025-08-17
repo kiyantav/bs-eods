@@ -296,12 +296,20 @@ function calculateWeeklySummary(logs) {
 
   logs.forEach(log => {
     const weekStart = getMonday(log.date);
-    // If filtering by shop, group by barber+shop+week. Otherwise, group by barber+week.
     const key = shopFilter
       ? `${log.barberName}_${weekStart}` 
       : `${log.barberName}_${weekStart}`;
 
     if (!summary[key]) {
+      // Find the barber's day rate from any shop
+      let dayRate = 0;
+      for (const shop in barbersByShopMap) {
+        const found = barbersByShopMap[shop].find(b => b.name === log.barberName);
+        if (found) {
+          dayRate = found.dayRate;
+          break;
+        }
+      }
       summary[key] = {
         barberName: log.barberName,
         shop: log.shop,
@@ -310,20 +318,18 @@ function calculateWeeklySummary(logs) {
         totalCommission: 0,
         daysWorked: new Set(),
         totalPay: 0,
-       dayRates: {} // Track dayRates per shop
+        dayRate: dayRate // Always the same for the barber
       };
     }
     summary[key].totalHaircuts += log.haircuts;
     summary[key].totalCommission += calculateCommission(log.haircuts);
     summary[key].daysWorked.add(log.date);
-
-   const dayRate = barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0;
-    summary[key].dayRates[log.date + "_" + log.shop] = dayRate;
   });
 
   Object.values(summary).forEach(entry => {
-    const dayRatePay = Object.values(entry.dayRates).reduce((sum, rate) => sum + rate, 0);
-  entry.totalPay = dayRatePay + entry.totalCommission;
+    const daysWorkedCount = entry.daysWorked.size;
+    const dayRatePay = daysWorkedCount * entry.dayRate;
+    entry.totalPay = dayRatePay + entry.totalCommission;
   });
 
   return Object.values(summary);
