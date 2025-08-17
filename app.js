@@ -536,16 +536,24 @@ function renderAdminDashboard() {
   updateCashSummary();
 
   document.getElementById("admin-shop-filter").addEventListener("change", () => {
-    updateAdminTable();
-    updateWeeklySummary();
-    updateCashSummary();
+     const filteredLogs = filterLogsByShopAndBarber();
+  updateAdminTable(filteredLogs);
+  updateWeeklySummary(filteredLogs);
+  updateCashSummary(filteredLogs);
   });
   
   document.getElementById("admin-barber-filter").addEventListener("input", () => {
-    updateAdminTable();
-    updateWeeklySummary();
-    updateCashSummary();
+      const filteredLogs = filterLogsByShopAndBarber();
+  updateAdminTable(filteredLogs);
+  updateWeeklySummary(filteredLogs);
+  updateCashSummary(filteredLogs);
   });
+  dateRangeInput.addEventListener("changeDate", () => {
+  const filteredLogs = filterLogsByShopAndBarber();
+  updateAdminTable(filteredLogs);
+  updateWeeklySummary(filteredLogs);
+  updateCashSummary(filteredLogs);
+});
 
   document.getElementById("logout-btn-admin").addEventListener("click", () => {
     adminView.style.display = "none";
