@@ -7,6 +7,15 @@ const adminView = document.getElementById("admin-view");
 const barberListDiv = document.getElementById("barber-list");
 const dailyForm = document.getElementById("daily-form");
 
+
+window.addEventListener("load", async () => {
+  const loadingModal = document.getElementById("loading-modal");
+  loadingModal.style.display = "none";
+  if (localStorage.getItem("bs_admin_logged_in") === "true" && localStorage.getItem("bs_password")) {
+    await openAdminView(localStorage.getItem("bs_password"));
+  }
+});
+
 window.addEventListener("load", () => {
   const loadingModal = document.getElementById("loading-modal");
   loadingModal.style.display = "none"; // Hide the spinner
@@ -80,6 +89,9 @@ loginBtn.addEventListener("click", async () => {
     const result = await response.json();
 
     if (result.success) {
+      localStorage.setItem("bs_admin_logged_in", "true");
+      localStorage.setItem("bs_password", password);
+        
       loginFeedback.style.display = "none";
       loginFeedback.textContent = "";
       loginFeedback.style.color = "";
@@ -570,6 +582,8 @@ function renderAdminDashboard() {
 });
 
   document.getElementById("logout-btn-admin").addEventListener("click", () => {
+    localStorage.removeItem("bs_admin_logged_in");
+    localStorage.removeItem("bs_password");
     adminView.style.display = "none";
     loginView.style.display = "block";
     passwordInput.value = "";
