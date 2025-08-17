@@ -298,7 +298,7 @@ function calculateWeeklySummary(logs) {
     const weekStart = getMonday(log.date);
     // If filtering by shop, group by barber+shop+week. Otherwise, group by barber+week.
     const key = shopFilter
-      ? `${log.barberName}_${log.shop}_${weekStart}`
+      ? `${log.barberName}_${weekStart}` 
       : `${log.barberName}_${weekStart}`;
 
     if (!summary[key]) {
@@ -310,12 +310,15 @@ function calculateWeeklySummary(logs) {
         totalCommission: 0,
         daysWorked: new Set(),
         totalPay: 0,
-        dayRate: barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0
+       dayRates: {} // Track dayRates per shop
       };
     }
     summary[key].totalHaircuts += log.haircuts;
     summary[key].totalCommission += calculateCommission(log.haircuts);
     summary[key].daysWorked.add(log.date);
+
+   const dayRate = barbersByShopMap[log.shop]?.find(b => b.name === log.barberName)?.dayRate || 0;
+    summary[key].dayRates[log.date + "_" + log.shop] = dayRate;
   });
 
   Object.values(summary).forEach(entry => {
@@ -656,7 +659,6 @@ function updateAdminTable(logs = demoLogs) {
 
 
 function updateWeeklySummary(logs = demoLogs) {
-  const shopFilter = document.getElementById("admin-shop-filter").value;
   const tbody = document.querySelector("#weekly-summary-table tbody");
   tbody.innerHTML = "";
 
@@ -666,7 +668,6 @@ function updateWeeklySummary(logs = demoLogs) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td data-label="Week Start">${row.weekStart}</td>
-       ${shopFilter ? `<td data-label="Shop">${row.shop}</td>` : ""}
       <td data-label="Barber">${row.barberName}</td>
       <td data-label="Total Haircuts">${row.totalHaircuts}</td>
       <td data-label="Total Commission (£)">£${row.totalCommission.toFixed(2)}</td>
