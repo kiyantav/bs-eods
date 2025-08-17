@@ -322,9 +322,8 @@ function calculateWeeklySummary(logs) {
   });
 
   Object.values(summary).forEach(entry => {
-    const daysWorkedCount = entry.daysWorked.size;
-    const dayRatePay = daysWorkedCount * entry.dayRate;
-    entry.totalPay = dayRatePay + entry.totalCommission;
+    const dayRatePay = Object.values(entry.dayRates).reduce((sum, rate) => sum + rate, 0);
+  entry.totalPay = dayRatePay + entry.totalCommission;
   });
 
   return Object.values(summary);
