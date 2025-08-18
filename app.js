@@ -278,7 +278,7 @@ function showConfirmationModal(rowsToInsert) {
 // Utility functions
 function calculateCommission(haircuts) {
   if (haircuts >= 15) return 40;
-  if (haircuts >= 13) return 20;
+  if (haircuts >= 13) return 30;
   if (haircuts >= 10) return 10;
   return 0;
 }
