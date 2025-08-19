@@ -577,31 +577,31 @@ function renderAdminDashboard() {
   });
 
 
-document.getElementById("send-test-email-btn").addEventListener("click", async () => {
-  console.log('🔘 Button clicked!'); // Add this line
+// document.getElementById("send-test-email-btn").addEventListener("click", async () => {
+//   console.log('🔘 Button clicked!'); // Add this line
   
-  try {
-    console.log('📡 Making fetch request...'); // Add this line
-    const response = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}) // Empty body for now since you're using hardcoded values
-    });
-    console.log('📨 Response received:', response); // Add this line
+//   try {
+//     console.log('📡 Making fetch request...'); // Add this line
+//     const response = await fetch("/api/send-email", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({}) // Empty body for now since you're using hardcoded values
+//     });
+//     console.log('📨 Response received:', response); // Add this line
     
-    const result = await response.json();
-    console.log('📋 Result:', result); // Add this line
+//     const result = await response.json();
+//     console.log('📋 Result:', result); // Add this line
     
-    if (response.ok) {
-      alert("Test email sent! Check your inbox.");
-    } else {
-      alert("Failed to send email: " + (result.error || JSON.stringify(result)));
-    }
-  } catch (err) {
-    console.error('💥 Frontend error:', err); // Add this line
-    alert("Error sending email: " + err.message);
-  }
-});
+//     if (response.ok) {
+//       alert("Test email sent! Check your inbox.");
+//     } else {
+//       alert("Failed to send email: " + (result.error || JSON.stringify(result)));
+//     }
+//   } catch (err) {
+//     console.error('💥 Frontend error:', err); // Add this line
+//     alert("Error sending email: " + err.message);
+//   }
+// });
 
   const dateRangeInput = document.getElementById("admin-date-range");
   const datepicker = new Datepicker(dateRangeInput, {
