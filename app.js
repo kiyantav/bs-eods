@@ -576,46 +576,34 @@ function renderAdminDashboard() {
     passwordInput.value = "";
   });
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM ready - registering send-test-email-btn handler');
-  const btn = document.getElementById('send-test-email-btn');
-  if (!btn) {
-    console.warn('send-test-email-btn not found');
-    return;
+ const sendBtn = document.getElementById("send-test-email-btn");
+  if (sendBtn) {
+    sendBtn.addEventListener("click", async () => {
+      console.log('🔘 Send Test Email button clicked');
+      const to = prompt('Enter test recipient email', 'you@yourdomain.com');
+      if (!to) { console.log('No recipient entered — aborting'); return; }
+      const payload = {
+        from: 'Test <admin@submissions.barbersmiths.co.uk>',
+        to: [to],
+        subject: 'Resend test — BarberSmiths',
+        html: '<strong>Resend test — it works!</strong>'
+      };
+      console.log('Sending payload:', payload);
+      try {
+        const resp = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const text = await resp.text();
+        console.log('Network response status:', resp.status, 'body:', text);
+        alert('Request complete — check browser console and server logs');
+      } catch (err) {
+        console.error('Fetch error:', err);
+        alert('Fetch error — see console');
+      }
+    });
   }
-
-  btn.addEventListener('click', async () => {
-    console.log('🔘 Send Test Email button clicked');
-    const to = prompt('Enter test recipient email', 'you@yourdomain.com');
-    if (!to) {
-      console.log('No recipient entered — aborting');
-      return;
-    }
-
-    const payload = {
-      from: 'Test <admin@submissions.barbersmiths.co.uk>',
-      to: [to],
-      subject: 'Resend test — BarberSmiths',
-      html: '<strong>Resend test — it works!</strong>'
-    };
-
-    console.log('Sending payload:', payload);
-
-    try {
-      const resp = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const text = await resp.text();
-      console.log('Network response status:', resp.status, 'body:', text);
-      alert('Request complete — check browser console and server logs');
-    } catch (err) {
-      console.error('Fetch error:', err);
-      alert('Fetch error — see console');
-    }
-  });
-});
 
 
   const dateRangeInput = document.getElementById("admin-date-range");
