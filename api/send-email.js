@@ -18,8 +18,8 @@ module.exports = async function handler(req, res) {
       'Authorization': `Bearer re_M6xv6YhJ_N5BECSukTEKzLqd8ggN3ANgn`,
     },
     body: JSON.stringify({
-      from: 'Submissions <contact@barbersmiths.co.uk>',
-      to: ['barbersmiths@resend.dev'],
+      from: 'Submissions <contact@submissions.barbersmiths.co.uk>',
+      to: ['contact@barbersmiths.co.uk'],
       subject: 'hello world',
       html: '<strong>it works!</strong>',
     }),
