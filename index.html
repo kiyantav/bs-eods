@@ -10,15 +10,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>  
-  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@latest/dist/css/datepicker.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@latest/dist/js/datepicker-full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@latest/dist/css/datepicker.min.css">
+<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@latest/dist/js/datepicker-full.min.js"></script>
 </head>
 <body>
   <!-- Login Page -->
   <div id="login-view" class="view-container">
     <div class="login-wrapper">
-      <img src="assets/BarberSmiths_FoxLogo.png" alt="BarberSmiths Logo">
+      <img src="/BarberSmiths_FoxLogo.png" alt="BarberSmiths Logo">
       <h1>BarberSmiths</h1>
       <p>End of day reporting system</p>
       
@@ -38,15 +37,15 @@
        <label style="position:relative;">
         <span class="label-text">Password</span>
         <input type="password" id="password" placeholder="Enter your password" style="padding-right:40px;">
-         <button type="button" id="toggle-password" style="position:absolute; right:8px; top:32px; background:none; border:none; color:var(--secondary-dark); font-size:1.2rem; cursor:pointer;">
+       <button type="button" id="toggle-password" style="position:absolute; right:8px; top:32px; background:none; border:none; color:var(--secondary-dark); font-size:1.2rem; cursor:pointer;">
         <i class="fi fi-ss-eye"></i>
         </button>
-      </label>
+        </label>
 
         <label style="display:flex; align-items:center; gap:0.5rem;">
         <input type="checkbox" id="remember-password" style="width:18px; height:18px;">
         <span style="font-size:0.95rem;">Remember password</span>
-      </label>
+        </label>
         
         <button id="login-btn" style="width: 100%; margin-top: 1rem;">
           Login
@@ -109,7 +108,7 @@
       </div>
 
       <button type="submit" class="btn-success" style="width: 100%;">
-        Submit Report
+        📝 Submit Report
       </button>
     </form>
   </div>
@@ -118,8 +117,8 @@
   <div id="admin-view" class="view-container" style="display:none;">
     <div class="admin-header">
       <h2>Admin Dashboard</h2>
-       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
-        <button id="send-test-email-btn" class="btn-secondary" style="margin-left:2rem;">Send Test Email</button>
+      <button id="logout-btn-admin" class="btn-secondary">Logout</button>
+      
     </div>
     
     <!-- Admin content will be populated by JS -->
@@ -142,7 +141,7 @@
     <button id="success-ok" class="btn-success" style="margin-top:1rem;">OK</button>
   </div>
 </div>
- <div id="loading-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+<div id="loading-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
   <div class="spinner" style="width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3); border-top: 5px solid white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
 </div>
 
@@ -151,7 +150,8 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-</style>   
+</style>
+    
 
   <script>
 document.getElementById("logout-btn-form").addEventListener("click", () => {
@@ -166,7 +166,43 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
   passwordInput.value = "";
 });
 
+const togglePasswordBtn = document.getElementById("toggle-password");
+togglePasswordBtn.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    togglePasswordBtn.innerHTML = '<i class="fi fi-sr-eye-crossed"></i>';
+  } else {
+    passwordInput.type = "password";
+    togglePasswordBtn.innerHTML = '<i class="fi fi-ss-eye"></i>';
+  }
+});
 
+document.getElementById("send-test-email-btn").addEventListener("click", async () => {
+  console.log('🔘 Button clicked!'); // Add this line
+  
+  try {
+    console.log('📡 Making fetch request...'); // Add this line
+    const response = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}) // Empty body for now since you're using hardcoded values
+    });
+    console.log('📨 Response received:', response); // Add this line
+    
+    const result = await response.json();
+    console.log('📋 Result:', result); // Add this line
+    
+    if (response.ok) {
+      alert("Test email sent! Check your inbox.");
+    } else {
+      alert("Failed to send email: " + (result.error || JSON.stringify(result)));
+    }
+  } catch (err) {
+    console.error('💥 Frontend error:', err); // Add this line
+    alert("Error sending email: " + err.message);
+  }
+});
+    
   </script>
   <script src="app.js"></script>
 </body>
