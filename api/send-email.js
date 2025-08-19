@@ -1,12 +1,16 @@
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    const response = await fetch('https://api.resend.com/emails', { // Changed from 'res' to 'response'
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, // stored in Vercel env vars
         'Content-Type': 'application/json',
-        'Authorization': `Bearer re_M6xv6YhJ_N5BECSukTEKzLqd8ggN3ANgn`,
       },
-      body: JSON.stringify({
+       body: JSON.stringify({
         from: 'Submissions <contact@submissions.barbersmiths.co.uk>',
         to: ['contact@barbersmiths.co.uk'],
         subject: 'hello world',
@@ -14,11 +18,10 @@ module.exports = async function handler(req, res) {
       }),
     });
 
-    const result = await response.json(); // Changed from 'res' to 'response'
-    res.status(response.status).json(result); // Use 'response.status' not 'res.status'
-  } catch (error) {
-    console.error('❌ Error:', error);
-    res.status(500).json({ error: error.message });
+    const data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
   }
-};
-
+}
