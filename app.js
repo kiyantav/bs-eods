@@ -563,7 +563,13 @@ function renderAdminDashboard() {
   updateWeeklySummary(filteredLogs);
   updateCashSummary(filteredLogs);
   });
-  dateRangeInput.addEventListener("changeDate", () => {
+//   dateRangeInput.addEventListener("changeDate", () => {
+//   const filteredLogs = filterLogsByShopAndBarber();
+//   updateAdminTable(filteredLogs);
+//   updateWeeklySummary(filteredLogs);
+//   updateCashSummary(filteredLogs);
+// });
+document.getElementById("admin-date-range").addEventListener("changeDate", () => {
   const filteredLogs = filterLogsByShopAndBarber();
   updateAdminTable(filteredLogs);
   updateWeeklySummary(filteredLogs);
@@ -617,6 +623,9 @@ function renderAdminDashboard() {
 });
 
 dateRangeInput.addEventListener("changeDate", refreshAdminTables);
+
+console.log('Logout btn:', document.getElementById("logout-btn-admin"));
+console.log('Send email btn:', document.getElementById("send-test-email-btn"));
 }
 
 function updateSummaryMetrics(logs) {
@@ -666,9 +675,9 @@ function refreshAdminTables() {
   updateCashSummary(filteredLogs);
 }
 
-dateRangeInput.addEventListener("changeDate", refreshAdminTables);
-document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
-document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
+// dateRangeInput.addEventListener("changeDate", refreshAdminTables);
+// document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
+// document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
 
 function updateAdminTable(logs = demoLogs) {
   const shopFilter = document.getElementById("admin-shop-filter").value;
