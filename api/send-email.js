@@ -1,16 +1,14 @@
-const fetch = require('node-fetch');
-
 module.exports = async function handler(req, res) {
-  console.log('📧 Send email endpoint hit!'); // Add this line
-  console.log('Method:', req.method); // Add this line
+  console.log('📧 Send email endpoint hit!');
+  console.log('Method:', req.method);
   
   if (req.method !== "POST") {
-    console.log('❌ Method not allowed'); // Add this line
+    console.log('❌ Method not allowed');
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
-  console.log('🚀 Attempting to send email...'); // Add this line
+  console.log('🚀 Attempting to send email...');
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
