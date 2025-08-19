@@ -116,11 +116,7 @@
 
   <!-- Admin Dashboard -->
   <div id="admin-view" class="view-container" style="display:none;">
-    <div class="admin-header">
-      <h2>Admin Dashboard</h2>
-       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
-        <button id="send-test-email-btn" class="btn-secondary" style="margin-left:2rem;">Send Test Email</button>
-    </div>
+    
     
     <!-- Admin content will be populated by JS -->
   </div>
@@ -160,15 +156,10 @@ document.getElementById("logout-btn-form").addEventListener("click", () => {
   passwordInput.value = "";
 });
 
-document.getElementById("logout-btn-admin").addEventListener("click", () => {
-  adminView.style.display = "none";
-  loginView.style.display = "block";
-  passwordInput.value = "";
-});
 
   </script>
 
- 
+
   <script src="app.js"></script>
 </body>
 </html>
