@@ -577,28 +577,28 @@ function renderAdminDashboard() {
   });
 
 
-document.getElementById("send-test-email-btn").onclick = async () => {
-  const to = prompt("Enter your email address for the test:");
-  if (!to) return;
-  const subject = "Test Email from Barbersmiths Admin";
-  const html = "<strong>This is a test email sent via Resend!</strong>";
+// document.getElementById("send-test-email-btn").onclick = async () => {
+//   const to = prompt("Enter your email address for the test:");
+//   if (!to) return;
+//   const subject = "Test Email from Barbersmiths Admin";
+//   const html = "<strong>This is a test email sent via Resend!</strong>";
 
-  try {
-    const response = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to, subject, html })
-    });
-    const result = await response.json();
-    if (response.ok) {
-      alert("Test email sent! Check your inbox.");
-    } else {
-      alert("Failed to send email: " + (result.error || JSON.stringify(result)));
-    }
-  } catch (err) {
-    alert("Error sending email: " + err.message);
-  }
-};
+//   try {
+//     const response = await fetch("/api/send-email", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ to, subject, html })
+//     });
+//     const result = await response.json();
+//     if (response.ok) {
+//       alert("Test email sent! Check your inbox.");
+//     } else {
+//       alert("Failed to send email: " + (result.error || JSON.stringify(result)));
+//     }
+//   } catch (err) {
+//     alert("Error sending email: " + err.message);
+//   }
+// };
 
   const dateRangeInput = document.getElementById("admin-date-range");
   const datepicker = new Datepicker(dateRangeInput, {
