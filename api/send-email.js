@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'submissions.barbersmiths.co.uk', // Use a verified sender address
+        from: 'contact@submissions.barbersmiths.co.uk', // Use a verified sender address
         to: 'contact@barbersmiths.co.uk',
         subject: 'Daily Submission',
         html: '<p>Test submission</p>'
