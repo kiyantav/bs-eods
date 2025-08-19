@@ -168,12 +168,18 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
 
   </script>
 
-    <script>
-  // debug send button — prompts for target email and logs everything
-  document.getElementById("send-test-email-btn").addEventListener("click", async () => {
-    console.log('🔘 Send Test Email button clicked');
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM ready - registering send-test-email-btn handler');
+  const btn = document.getElementById('send-test-email-btn');
+  if (!btn) {
+    console.warn('send-test-email-btn not found');
+    return;
+  }
 
-    const to = prompt("Enter test recipient email", "you@yourdomain.com");
+  btn.addEventListener('click', async () => {
+    console.log('🔘 Send Test Email button clicked');
+    const to = prompt('Enter test recipient email', 'you@yourdomain.com');
     if (!to) {
       console.log('No recipient entered — aborting');
       return;
@@ -202,6 +208,7 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
       alert('Fetch error — see console');
     }
   });
+});
 </script>
   <script src="app.js"></script>
 </body>
