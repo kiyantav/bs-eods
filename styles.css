@@ -609,3 +609,14 @@ input[type="number"] {
   background: var(--success) !important;
   color: var(--white) !important;
 }
+
+.barber-profile-modal {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.barber-profile-modal .modal-content {
+  background: #fff; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90vw; max-height: 90vh; overflow-y: auto;
+}
+.barber-profile-modal .close-btn {
+  background: none; border: none; font-size: 1.5rem; cursor: pointer;
+}
