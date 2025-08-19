@@ -673,13 +673,22 @@ function updateWeeklySummary(logs = demoLogs) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td data-label="Week Start">${row.weekStart}</td>
-      <td data-label="Barber">${row.barberName}</td>
+      <td data-label="Barber">
+        <button class="barber-profile-btn" data-barber="${row.barberName}">${row.barberName}</button>
+      </td>
       <td data-label="Total Haircuts">${row.totalHaircuts}</td>
       <td data-label="Total Commission (£)">£${row.totalCommission.toFixed(2)}</td>
       <td data-label="Total Pay (£)">£${(row.totalPay - row.totalCommission).toFixed(2)}</td>
       <td data-label="Total (Pay + Commission) (£)">£${row.totalPay.toFixed(2)}</td>
     `;
     tbody.appendChild(tr);
+  });
+
+  // Add click event for profile buttons
+  tbody.querySelectorAll('.barber-profile-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showBarberProfile(btn.dataset.barber);
+    });
   });
 }
 
@@ -689,3 +698,41 @@ document.getElementById("logout-btn-form")?.addEventListener("click", () => {
   loginView.style.display = "block";
   passwordInput.value = "";
 });
+
+function showBarberProfile(barberName) {
+  // Filter logs for this barber
+  const logs = demoLogs.filter(log => log.barberName === barberName);
+
+  // Create modal HTML (customize as needed)
+  const modal = document.createElement('div');
+  modal.className = 'barber-profile-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h3>Profile: ${barberName}</h3>
+      <button class="close-btn" style="float:right;">✖</button>
+      <p><strong>Total Haircuts:</strong> ${logs.reduce((sum, log) => sum + log.haircuts, 0)}</p>
+      <p><strong>Total Commission:</strong> £${logs.reduce((sum, log) => sum + calculateCommission(log.haircuts), 0).toFixed(2)}</p>
+      <p><strong>Days Worked:</strong> ${[...new Set(logs.map(log => log.date))].join(', ')}</p>
+      <h4>All Logs</h4>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Shop</th><th>Haircuts</th><th>Commission</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          ${logs.map(log => `
+            <tr>
+              <td>${log.date}</td>
+              <td>${log.shop}</td>
+              <td>${log.haircuts}</td>
+              <td>£${calculateCommission(log.haircuts)}</td>
+              <td>${log.notes}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelector('.close-btn').onclick = () => modal.remove();
+}
