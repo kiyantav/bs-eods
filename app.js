@@ -465,6 +465,7 @@ function renderAdminDashboard() {
     <div class="admin-header">
       <h2>Admin Dashboard</h2>
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
+       <button id="send-test-email-btn" class="btn-secondary" style="margin-left:2rem;">Send Test Email</button>
     </div>
     <div style="">
      <div class="summary-metrics" style="display: flex; gap: 2rem; margin-bottom: 2rem;">
