@@ -166,21 +166,43 @@ document.getElementById("logout-btn-admin").addEventListener("click", () => {
   passwordInput.value = "";
 });
 
-
-document.getElementById("send-test-email-btn").onclick = async () => {
-  try {
-    const response = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to, subject, html })
-    });
-    const result = await response.json();
-  } catch (err) {
-    alert("Error sending email: " + err.message);
-  }
-};
-
   </script>
+
+    <script>
+  // debug send button — prompts for target email and logs everything
+  document.getElementById("send-test-email-btn").addEventListener("click", async () => {
+    console.log('🔘 Send Test Email button clicked');
+
+    const to = prompt("Enter test recipient email", "you@yourdomain.com");
+    if (!to) {
+      console.log('No recipient entered — aborting');
+      return;
+    }
+
+    const payload = {
+      from: 'Test <admin@submissions.barbersmiths.co.uk>',
+      to: [to],
+      subject: 'Resend test — BarberSmiths',
+      html: '<strong>Resend test — it works!</strong>'
+    };
+
+    console.log('Sending payload:', payload);
+
+    try {
+      const resp = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const text = await resp.text();
+      console.log('Network response status:', resp.status, 'body:', text);
+      alert('Request complete — check browser console and server logs');
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Fetch error — see console');
+    }
+  });
+</script>
   <script src="app.js"></script>
 </body>
 </html>
