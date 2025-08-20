@@ -257,6 +257,36 @@ function showConfirmationModal(rowsToInsert) {
         dailyForm.reset();
         document.getElementById("date").value = new Date().toISOString().slice(0,10);
         
+        try {
+    const emailPayload = {
+      from: 'Barbersmiths <admin@submissions.barbersmiths.co.uk>',
+      to: ['contact@barbersmiths.co.uk'], 
+      subject: `Daily Report Submitted: ${shopName} (${date})`,
+      html: `
+        <h2>Daily Report Submitted</h2>
+        <p><strong>Shop:</strong> ${shopName}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Cash Total:</strong> £${cashTotal}</p>
+        <p><strong>Cash Float:</strong> £${cashFloat}</p>
+        <p><strong>Notes:</strong> ${document.getElementById("notes").value || "-"}</p>
+        <hr>
+        <strong>Barber Haircuts:</strong>
+        <ul>
+          ${rowsToInsert.map(r => `<li>${getBarberNameById(r.barber_id) || r.barberName}: <strong>${r.haircuts}</strong></li>`).join("")}
+        </ul>
+      `
+    };
+    await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(emailPayload)
+    });
+    console.log("Notification email sent!");
+  } catch (err) {
+    console.error("Failed to send notification email:", err);
+  }
+
+
         const successModal = document.getElementById("success-modal");
         successModal.style.display = "flex";
         document.getElementById("success-ok").onclick = () => {
