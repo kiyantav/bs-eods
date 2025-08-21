@@ -824,7 +824,7 @@ function showBarberProfile(barberName) {
   modal.querySelector('.close-btn').onclick = () => modal.remove();
 }
 
-const locationIdsByShop = {
+const placeIdsByShop = {
   islington: 'EgoyMDI1MDgxOC4wIKXMDSoASAFQAw%3D%3D'
 //   marylebone: 'LOCATION_ID_MAR',
 //   shoreditch: 'LOCATION_ID_SHO',
