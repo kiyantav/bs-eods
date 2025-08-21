@@ -8,10 +8,21 @@ export default async function handler(req, res) {
     }
 
     const placesApiKey = process.env.GOOGLE_PLACES_API_KEY;
-    const placeId = req.query.placeId || req.query.locationId; // accept either param name
     
     if (!placesApiKey) return res.status(500).json({ error: 'Missing GOOGLE_PLACES_API_KEY' });
     if (!placeId) return res.status(400).json({ error: 'Missing placeId or locationId' });
+
+      const raw = req.query.placeId || req.query.locationId;
+    if (!raw) return res.status(400).json({ error: 'Missing placeId or locationId' });
+
+    // decode any percent-encoding and validate
+    const placeId = decodeURIComponent(raw);
+    if (!/^ChI/.test(placeId)) {
+      return res.status(400).json({
+        error: 'Invalid Place ID',
+        detail: 'Place IDs from Google Places typically start with "ChI...". Use the Place ID Finder to get the correct id.'
+      });
+    }
 
     // Use Google Places API - much simpler and has free quota
     const placesUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=name,rating,user_ratings_total,reviews&key=${encodeURIComponent(placesApiKey)}`;
