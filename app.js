@@ -155,6 +155,7 @@ async function openAdminView(password) {
       loginView.style.display = "none";
       adminView.style.display = "block";
       renderAdminDashboard();
+      loadShopReviewProgress();
     }
   } catch (error) {
     console.error("Error fetching admin data:", error);
@@ -518,6 +519,7 @@ function renderAdminDashboard() {
         <div>Total Haircuts: <span id="total-haircuts">0</span></div>
         <div>Total Commission (£): <span id="total-commission">0</span></div>
         <div>Total Cash (£): <span id="total-cash">0</span></div>
+        <div id="review-progress" style="display:flex; gap:1rem; align-items:center;"></div>
       </div>
       <div class="filters" style="display:flex; gap:1rem; margin-bottom:2rem;">
         <div class="filter-group">
@@ -822,3 +824,31 @@ function showBarberProfile(barberName) {
   modal.querySelector('.close-btn').onclick = () => modal.remove();
 }
 
+const locationIdsByShop = {
+  islington: '9093037781061023715'
+//   marylebone: 'LOCATION_ID_MAR',
+//   shoreditch: 'LOCATION_ID_SHO',
+//   richmond: 'LOCATION_ID_RIC'
+};
+
+async function loadShopReviewProgress() {
+  Object.entries(locationIdsByShop).forEach(async ([shopKey, locationId]) => {
+    try {
+      const resp = await fetch(`/api/business-reviews?accountId=${encodeURIComponent(process.env?.GBP_ACCOUNT_ID || '')}&locationId=${encodeURIComponent(locationId)}`);
+      const json = await resp.json();
+      const five = json.fiveStarCount || 0;
+      const target = 25;
+      const elId = `reviews-${shopKey}`;
+      let el = document.getElementById(elId);
+      if (!el) {
+        el = document.createElement('div');
+        el.id = elId;
+        el.style.marginLeft = '1rem';
+        document.querySelector('.summary-metrics')?.appendChild(el);
+      }
+      el.innerHTML = `<strong>${shopKey}</strong>: ${five} / ${target} 5★ reviews`;
+    } catch (err) {
+      console.error('loadShopReviewProgress error', shopKey, err);
+    }
+  });
+}
