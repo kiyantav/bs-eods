@@ -832,9 +832,9 @@ const locationIdsByShop = {
 };
 
 async function loadShopReviewProgress() {
-  Object.entries(locationIdsByShop).forEach(async ([shopKey, locationId]) => {
+ Object.entries(placeIdsByShop).forEach(async ([shopKey, placeId]) => {
     try {
-    const resp = await fetch(`/api/business-reviews?locationId=${encodeURIComponent(locationId)}`);
+       const resp = await fetch(`/api/business-reviews?placeId=${encodeURIComponent(placeId)}`);
       const json = await resp.json();
       const five = json.fiveStarCount || 0;
       const target = 25;
