@@ -834,7 +834,7 @@ const locationIdsByShop = {
 async function loadShopReviewProgress() {
   Object.entries(locationIdsByShop).forEach(async ([shopKey, locationId]) => {
     try {
-      const resp = await fetch(`/api/business-reviews?accountId=${encodeURIComponent(process.env?.GBP_ACCOUNT_ID || '')}&locationId=${encodeURIComponent(locationId)}`);
+    const resp = await fetch(`/api/business-reviews?locationId=${encodeURIComponent(locationId)}`);
       const json = await resp.json();
       const five = json.fiveStarCount || 0;
       const target = 25;
