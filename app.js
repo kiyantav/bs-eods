@@ -832,23 +832,29 @@ const placeIdsByShop = {
 };
 
 async function loadShopReviewProgress() {
- Object.entries(placeIdsByShop).forEach(async ([shopKey, placeId]) => {
+  Object.entries(placeIdsByShop).forEach(async ([shopKey, placeId]) => {
+    const elId = `reviews-${shopKey}`;
+    let el = document.getElementById(elId);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = elId;
+      el.style.marginLeft = '1rem';
+      document.querySelector('.summary-metrics')?.appendChild(el);
+    }
+
     try {
-       const resp = await fetch(`/api/business-reviews?placeId=${encodeURIComponent(placeId)}`);
+      const resp = await fetch(`/api/business-reviews?placeId=${encodeURIComponent(placeId)}`);
       const json = await resp.json();
-      const five = json.fiveStarCount || 0;
+      
+      // Use the correct field names from your API response
+      const five = json.fiveStarSample || 0;
+      const total = json.totalRatings || 0;
       const target = 25;
-      const elId = `reviews-${shopKey}`;
-      let el = document.getElementById(elId);
-      if (!el) {
-        el = document.createElement('div');
-        el.id = elId;
-        el.style.marginLeft = '1rem';
-        document.querySelector('.summary-metrics')?.appendChild(el);
-      }
-      el.innerHTML = `<strong>${shopKey}</strong>: ${five} / ${target} 5★ reviews`;
+      
+      el.innerHTML = `<strong>${shopKey}</strong>: ${five}/5 recent are 5★ • ${total} total ratings • Target: ${target} 5★ reviews`;
     } catch (err) {
       console.error('loadShopReviewProgress error', shopKey, err);
+      el.innerHTML = `<strong>${shopKey}</strong>: error loading reviews`;
     }
   });
 }
