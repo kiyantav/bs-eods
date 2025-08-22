@@ -754,10 +754,20 @@ function updateAdminTable(logs = demoLogs) {
     });
 }
 
-
 function updateWeeklySummary(logs = demoLogs) {
   const tbody = document.querySelector("#weekly-summary-table tbody");
   tbody.innerHTML = "";
+
+  const todayIso = new Date().toISOString().slice(0,10);
+  const weekStart = getMonday(todayIso); // returns YYYY-MM-DD for Monday
+  const weekEndDate = new Date(weekStart);
+  weekEndDate.setDate(weekEndDate.getDate() + 6);
+  const weekEnd = weekEndDate.toISOString().slice(0,10);
+
+  // filter logs to current week only
+  const currentWeekLogs = (logs || demoLogs).filter(log => {
+    return log.date >= weekStart && log.date <= weekEnd;
+  });
 
   const summary = calculateWeeklySummary(logs);
 
