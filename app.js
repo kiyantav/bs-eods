@@ -769,7 +769,7 @@ function updateWeeklySummary(logs = demoLogs) {
     return log.date >= weekStart && log.date <= weekEnd;
   });
 
-  const summary = calculateWeeklySummary(logs);
+ const summary = calculateWeeklySummary(currentWeekLogs);
 
   summary.forEach(row => {
     const tr = document.createElement("tr");
