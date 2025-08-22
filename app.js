@@ -515,7 +515,7 @@ function renderAdminDashboard() {
        <button id="send-test-email-btn" class="btn-secondary" style="margin-left:2rem;">Send Test Email</button>
     </div>
     <div style="">
-     <div class="summary-metrics" style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+     <div class="summary-metrics" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
         <div>Total Haircuts: <span id="total-haircuts">0</span></div>
         <div>Total Commission (£): <span id="total-commission">0</span></div>
         <div>Total Cash (£): <span id="total-cash">0</span></div>
