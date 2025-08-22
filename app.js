@@ -876,7 +876,7 @@ async function loadShopReviewProgress() {
         const progressToNext = target - currentProgress;
         
         el.innerHTML = `
-          <div style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9;">
+          <div style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
             <strong>${shopKey.toUpperCase()}</strong><br>
             <span style="color: #28a745;">★ ${avgRating}/5</span> • ${total} total ratings<br>
             <div style="font-weight: bold; color: #007bff;">
