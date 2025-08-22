@@ -519,8 +519,14 @@ function renderAdminDashboard() {
         <div>Total Haircuts: <span id="total-haircuts">0</span></div>
         <div>Total Commission (£): <span id="total-commission">0</span></div>
         <div>Total Cash (£): <span id="total-cash">0</span></div>
-        <div id="review-progress" style="display:flex; gap:1rem; align-items:center;"></div>
       </div>
+       <section id="reviews-section" class="reviews-section">
+          <div class="reviews-header">
+            <h3>Review Progress</h3>
+            <p class="reviews-sub">Live 5★ counts + progress toward 25-review bonus</p>
+          </div>
+          <div id="review-cards" class="review-cards"></div>
+        </section>
       <div class="filters" style="display:flex; gap:1rem; margin-bottom:2rem;">
         <div class="filter-group">
           <label>Filter by Shop:
@@ -863,63 +869,70 @@ async function loadShopReviewProgress() {
   Object.entries(placeIdsByShop).forEach(async ([shopKey, placeId]) => {
     const elId = `reviews-${shopKey}`;
     let el = document.getElementById(elId);
+
+    // create card container inside #review-cards
+    const cardsContainer = document.getElementById('review-cards');
+    if (!cardsContainer) return; // guard if render not present
+
     if (!el) {
       el = document.createElement('div');
       el.id = elId;
-      el.style.marginLeft = '1rem';
-      document.querySelector('#review-progress')?.appendChild(el);
+      el.className = 'review-card';
+      cardsContainer.appendChild(el);
     }
 
     try {
       const resp = await fetch(`/api/business-reviews?placeId=${encodeURIComponent(placeId)}`);
       const json = await resp.json();
-      
+
       const fiveStar = json.fiveStarSample || 0;
       const total = json.totalRatings || 0;
       const avgRating = json.avgRating || 0;
       const target = 25;
-      
-      // Use manual data if available for accurate tracking
+
       const manualData = manualFiveStarData[shopKey];
-      
+      let bonusesEarned = 0;
+      let currentProgress = fiveStar;
+      let estTotalFive = fiveStar;
+
       if (manualData) {
-        // Calculate growth since manual count
-        const ratingGrowth = total - manualData.totalRatings;
-        const estimatedNewFiveStars = Math.round(ratingGrowth * (avgRating / 5)); // Rough estimate
-        const estimatedTotalFiveStars = manualData.totalFiveStars + estimatedNewFiveStars;
-        
-        // Calculate current bonus progress
-        const bonusesEarned = Math.floor(estimatedTotalFiveStars / target);
-        const currentProgress = estimatedTotalFiveStars % target;
-        const progressToNext = target - currentProgress;
-        
-        el.innerHTML = `
-          <div style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
-            <strong>${shopKey.toUpperCase()}</strong><br>
-            <span style="color: #28a745;">★ ${avgRating}/5</span> • ${total} total ratings<br>
-            <div style="font-weight: bold; color: #007bff;">
-              Bonuses earned: ${bonusesEarned} 🎉
-            </div>
-            <div style="color: #666;">
-              Progress: ${currentProgress}/${target} (${progressToNext} needed)
-            </div>
-            <small>Est. ${estimatedTotalFiveStars} total 5★ (+${ratingGrowth} ratings since manual count)</small>
-          </div>
-        `;
+        const ratingGrowth = Math.max(0, total - manualData.totalRatings);
+        const estimatedNewFiveStars = Math.round(ratingGrowth * (avgRating / 5));
+        estTotalFive = manualData.totalFiveStars + estimatedNewFiveStars;
+        bonusesEarned = Math.floor(estTotalFive / target);
+        currentProgress = estTotalFive % target;
       } else {
-        // Fallback to simple display for shops without manual data
-        const percentage = total > 0 ? Math.round((fiveStar / 5) * 100) : 0;
-        el.innerHTML = `
-          <div style="padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9;">
-            <strong>${shopKey.toUpperCase()}</strong><br>
-            <span style="color: #28a745;">★ ${avgRating}/5</span> • ${total} total ratings<br>
-            <small>Recent: ${fiveStar}/5 are 5★ (${percentage}%) - Need manual count for bonus tracking</small>
-          </div>
-        `;
+        // best-effort estimate if no manual baseline
+        bonusesEarned = Math.floor(fiveStar / target);
+        currentProgress = fiveStar % target;
+        estTotalFive = fiveStar;
       }
+
+      el.innerHTML = `
+        <div class="review-card-inner">
+          <div class="review-card-head">
+            <div class="review-shop">${shopKey.toUpperCase()}</div>
+            <div class="review-rating">★ ${avgRating.toFixed(1)}</div>
+          </div>
+
+          <div class="review-meta">
+            <div class="review-total">${estTotalFive} 5★ (est)</div>
+            <div class="review-count">${total} total ratings</div>
+          </div>
+
+          <div class="review-progress-bar" aria-hidden="true">
+            <div class="review-progress-fill" style="width: ${Math.min(100, (currentProgress / target) * 100)}%"></div>
+          </div>
+
+          <div class="review-progress-text">
+            <strong>${currentProgress}/${target}</strong> toward next bonus
+            <span class="small-muted"> • Bonuses: ${bonusesEarned}</span>
+          </div>
+        </div>
+      `;
     } catch (err) {
       console.error('loadShopReviewProgress error', shopKey, err);
-      el.innerHTML = `<strong>${shopKey}</strong>: error loading reviews`;
+      el.innerHTML = `<div class="review-card-inner error"><strong>${shopKey}</strong>: error loading reviews</div>`;
     }
   });
 }
