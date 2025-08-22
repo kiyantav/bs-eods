@@ -825,7 +825,7 @@ function showBarberProfile(barberName) {
 }
 
 const placeIdsByShop = {
-  islington: 'ChIJZVyrbV0bdkgRWTV0AiEMSoM'
+  islington: 'ChIJ-6z84C4bdkgRPsVt5LDn2LY'
 //   marylebone: 'LOCATION_ID_MAR',
 //   shoreditch: 'LOCATION_ID_SHO',
 //   richmond: 'LOCATION_ID_RIC'
