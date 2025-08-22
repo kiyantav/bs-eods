@@ -512,7 +512,6 @@ function renderAdminDashboard() {
     <div class="admin-header">
       <h2>Admin Dashboard</h2>
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
-       <button id="send-test-email-btn" class="btn-secondary" style="margin-left:2rem;">Send Test Email</button>
     </div>
     <div style="">
      <div class="summary-metrics" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
@@ -523,7 +522,7 @@ function renderAdminDashboard() {
        <section id="reviews-section" class="reviews-section">
           <div class="reviews-header">
             <h3>Review Progress</h3>
-            <p class="reviews-sub">Live 5★ counts + progress toward 25-review bonus</p>
+            <p class="reviews-sub"></p>
           </div>
           <div id="review-cards" class="review-cards"></div>
         </section>
