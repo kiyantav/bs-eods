@@ -916,7 +916,7 @@ async function loadShopReviewProgress() {
           </div>
 
           <div class="review-meta">
-            <div class="review-total">${estTotalFive} 5★ (est)</div>
+            <div class="review-total">${estTotalFive} (5★)</div>
             <div class="review-count">${total} total ratings</div>
           </div>
 
@@ -925,7 +925,7 @@ async function loadShopReviewProgress() {
           </div>
 
           <div class="review-progress-text">
-            <strong>${currentProgress}/${target}</strong> toward next bonus
+            <strong>${currentProgress}/${target}</strong> next bonus
             <span class="small-muted"> • Bonuses: ${bonusesEarned}</span>
           </div>
         </div>
