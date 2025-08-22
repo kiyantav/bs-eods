@@ -840,7 +840,7 @@ const manualFiveStarData = {
   },
    shoreditch: {
     totalFiveStars: 69, 
-    totalRatings: 208, 
+    totalRatings: 308, 
     bonusesEarned: 2,   
     currentProgress: 9  
   },
