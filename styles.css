@@ -41,7 +41,7 @@ h1 {
 
 /* Container for all views */
 .view-container {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
   background: var(--primary);
   border-radius: 16px;
