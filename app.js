@@ -825,10 +825,10 @@ function showBarberProfile(barberName) {
 }
 
 const placeIdsByShop = {
-  islington: 'ChIJ-6z84C4bdkgRPsVt5LDn2LY'
-//   marylebone: 'LOCATION_ID_MAR',
-//   shoreditch: 'LOCATION_ID_SHO',
-//   richmond: 'LOCATION_ID_RIC'
+  islington: 'ChIJZVyrbV0bdkgRWTV0AiEMSoM',
+  marylebone: 'ChIJv2Eq53cbdkgRgpCuMeacAlU',
+  shoreditch: 'ChIJZUYpQSYddkgR65AC3dCWq8E',
+  richmond: 'ChIJq26ylCoNdkgRSflpO4Tljk4'
 };
 
 const manualFiveStarData = {
@@ -837,8 +837,26 @@ const manualFiveStarData = {
     totalRatings: 403,  // At time of manual count
     bonusesEarned: 2,   // 53 ÷ 25 = 2 bonuses earned
     currentProgress: 3  // 53 % 25 = 3 toward next bonus
-  }
-  // Add other shops when you get their data
+  },
+   shoreditch: {
+    totalFiveStars: 69, 
+    totalRatings: 208, 
+    bonusesEarned: 2,   
+    currentProgress: 9  
+  },
+  marylebone: {
+    totalFiveStars: 45, 
+    totalRatings: 181, 
+    bonusesEarned: 1,   
+    currentProgress: 15  
+  },
+  richmond: {
+    totalFiveStars: 49, 
+    totalRatings: 50, 
+    bonusesEarned: 1,   
+    currentProgress: 24  
+  },
+ 
 };
 
 async function loadShopReviewProgress() {
