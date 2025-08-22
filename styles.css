@@ -705,7 +705,7 @@ input[type="number"] {
   gap: 0.5rem;
 }
 .review-shop { font-weight:700; color:var(--secondary-dark); }
-.review-rating { color: var(--success); font-weight:700; }
+.review-rating { color:var(--secondary-dark); font-weight:700; }
 
 .review-meta { display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted); }
 
@@ -719,7 +719,7 @@ input[type="number"] {
 }
 .review-progress-fill {
   height:100%;
-  background: linear-gradient(90deg, #28a745, #06b6d4);
+  background: linear-gradient(90deg, var(--secondary-dark), #fff);
   border-radius:999px;
 }
 
