@@ -51,7 +51,7 @@ h1 {
 }
 
 .view-container .admin-dashboard {
-  max-width: 1400px;
+  max-width: 1400px !important;
 }
 /* Login View */
 
