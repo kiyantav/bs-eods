@@ -925,8 +925,8 @@ async function loadShopReviewProgress() {
           </div>
 
           <div class="review-progress-text">
-            <strong>${currentProgress}/${target}</strong> next bonus
-            <span class="small-muted"> • Bonuses: ${bonusesEarned}</span>
+            <strong>${currentProgress}/${target}</strong>
+            <span class="small-muted"> Bonuses: ${bonusesEarned}</span>
           </div>
         </div>
       `;
