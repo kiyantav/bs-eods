@@ -663,10 +663,10 @@ input[type="number"] {
 }
 .reviews-section {
   margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+/*   padding: 1rem; */
+/*   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04); */
 }
 
 .reviews-header {
