@@ -50,7 +50,7 @@ h1 {
   border: 1px solid var(--border-dark);
 }
 
-.view-container .admin-dashboard {
+ .admin-dashboard {
   max-width: 1400px !important;
 }
 /* Login View */
