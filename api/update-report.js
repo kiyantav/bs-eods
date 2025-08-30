@@ -11,6 +11,8 @@ module.exports = async function handler(req, res) {
     const body = req.body || {};
     const { id, haircuts, notes, cashTotal, cashFloat, password } = body;
 
+    console.log('Update request received:', { method: req.method, body });
+
     if (!password || password !== process.env.ADMIN_PASSWORD) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
