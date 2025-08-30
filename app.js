@@ -450,6 +450,7 @@ function updateCashSummary(logs = demoLogs) {
 
   Object.values(groupedCashData).forEach(entry => {
     const tr = document.createElement("tr");
+    tr.dataset.id = entry.id;
     tr.innerHTML = `
       <td data-label="Date">${entry.date}</td>
       <td data-label="Shop">${entry.shop}</td>
@@ -748,6 +749,7 @@ function updateAdminTable(logs = demoLogs) {
     .filter(log => (!barberFilter || log.barberName.toLowerCase().includes(barberFilter)))
     .forEach(log => {
       const tr = document.createElement("tr");
+      tr.dataset.id = log.id;
       tr.innerHTML = `
         <td data-label="Date">${log.date}</td>
         <td data-label="Shop">${log.shop}</td>
