@@ -437,6 +437,7 @@ function updateCashSummary(logs = demoLogs) {
     const key = `${log.date}_${log.shop}`;
     if (!acc[key]) {
       acc[key] = {
+        id: log.id,
         date: log.date,
         shop: log.shop,
         cashTotal: log.cashTotal,
@@ -452,10 +453,19 @@ function updateCashSummary(logs = demoLogs) {
     tr.innerHTML = `
       <td data-label="Date">${entry.date}</td>
       <td data-label="Shop">${entry.shop}</td>
-      <td data-label="Cash Total (£)">£${entry.cashTotal.toFixed(2)}</td>
-      <td data-label="Cash Float (£)">£${entry.cashFloat.toFixed(2)}</td>
+      <td data-label="Cash Total (£)" class="cell-cash-total">£${entry.cashTotal.toFixed(2)}</td>
+      <td data-label="Cash Float (£)" class="cell-cash-float">£${entry.cashFloat.toFixed(2)}</td>
+      <td data-label="Actions" class="cell-actions">
+        <button class="edit-btn">Edit</button>
+      </td>
     `;
     tbody.appendChild(tr);
+  });
+    tbody.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tr = e.target.closest('tr');
+      enableCashRowEditing(tr);
+    });
   });
 }
 
@@ -683,8 +693,7 @@ dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 function updateSummaryMetrics(logs) {
   const totalHaircuts = logs.reduce((sum, log) => sum + log.haircuts, 0);
   const totalCommission = logs.reduce((sum, log) => sum + calculateCommission(log.haircuts), 0);
-
-    const uniqueCashEntries = {};
+  const uniqueCashEntries = {};
   logs.forEach(log => {
     const key = `${log.shop}_${log.date}`;
     if (!uniqueCashEntries[key] && log.cashTotal !== undefined) {
@@ -727,9 +736,6 @@ function refreshAdminTables() {
   updateCashSummary(filteredLogs);
 }
 
-// dateRangeInput.addEventListener("changeDate", refreshAdminTables);
-// document.getElementById("admin-shop-filter").addEventListener("change", refreshAdminTables);
-// document.getElementById("admin-barber-filter").addEventListener("input", refreshAdminTables);
 
 function updateAdminTable(logs = demoLogs) {
   const shopFilter = document.getElementById("admin-shop-filter").value;
@@ -746,13 +752,23 @@ function updateAdminTable(logs = demoLogs) {
         <td data-label="Date">${log.date}</td>
         <td data-label="Shop">${log.shop}</td>
         <td data-label="Barber">${log.barberName}</td>
-        <td data-label="Haircuts">${log.haircuts}</td>
-        <td data-label="Commission (£)">£${calculateCommission(log.haircuts)}</td>
-        <td data-label="Notes">${log.notes}</td>
+        <td data-label="Haircuts" class="cell-haircuts">${log.haircuts}</td>
+        <td data-label="Commission (£)" class="cell-commission">£${calculateCommission(log.haircuts)}</td>
+        <td data-label="Notes"  class="cell-notes">${log.notes}</td>
+         <td data-label="Actions" class="cell-actions">
+          <button class="edit-btn">Edit</button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
+     tbody.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tr = e.target.closest('tr');
+      enableAdminRowEditing(tr);
+    });
+  });
 }
+
 
 function updateWeeklySummary(logs = demoLogs) {
   const tbody = document.querySelector("#weekly-summary-table tbody");
@@ -769,7 +785,7 @@ function updateWeeklySummary(logs = demoLogs) {
     return log.date >= weekStart && log.date <= weekEnd;
   });
 
- const summary = calculateWeeklySummary(currentWeekLogs);
+  const summary = calculateWeeklySummary(currentWeekLogs);
 
   summary.forEach(row => {
     const tr = document.createElement("tr");
@@ -792,6 +808,248 @@ function updateWeeklySummary(logs = demoLogs) {
       showBarberProfile(btn.dataset.barber);
     });
   });
+}
+
+function enableAdminRowEditing(tr) {
+  if (!tr) return;
+  const id = tr.dataset.id;
+  
+  // store original values for cancel
+  tr.dataset.origHaircuts = tr.querySelector('.cell-haircuts').textContent;
+  tr.dataset.origNotes = tr.querySelector('.cell-notes').textContent;
+
+  const haircutsCell = tr.querySelector('.cell-haircuts');
+  const notesCell = tr.querySelector('.cell-notes');
+  const commissionCell = tr.querySelector('.cell-commission');
+  const actionsCell = tr.querySelector('.cell-actions');
+
+  const haircutsVal = parseFloat(tr.dataset.origHaircuts) || 0;
+  const notesVal = tr.dataset.origNotes || '';
+
+  haircutsCell.innerHTML = `<input type="number" class="edit-haircuts" min="0" step="0.5" value="${haircutsVal}">`;
+  notesCell.innerHTML = `<input type="text" class="edit-notes" value="${notesVal}">`;
+
+  actionsCell.innerHTML = `
+    <button class="save-btn">Save</button>
+    <button class="cancel-btn">Cancel</button>
+  `;
+
+  // update commission on haircuts change
+  haircutsCell.querySelector('.edit-haircuts').addEventListener('input', (e) => {
+    const v = Number(e.target.value) || 0;
+    commissionCell.textContent = `£${calculateCommission(v).toFixed(2)}`;
+  });
+
+  actionsCell.querySelector('.save-btn').addEventListener('click', async () => {
+    await saveAdminRowEdits(tr);
+  });
+  actionsCell.querySelector('.cancel-btn').addEventListener('click', () => {
+    cancelAdminRowEdits(tr);
+  });
+}
+
+// Edit cash table rows (cash total + float)
+function enableCashRowEditing(tr) {
+  if (!tr) return;
+  const id = tr.dataset.id;
+  
+  // store original values for cancel
+  tr.dataset.origCashTotal = tr.querySelector('.cell-cash-total').textContent.replace(/£/g,'');
+  tr.dataset.origCashFloat = tr.querySelector('.cell-cash-float').textContent.replace(/£/g,'');
+
+  const cashTotalCell = tr.querySelector('.cell-cash-total');
+  const cashFloatCell = tr.querySelector('.cell-cash-float');
+  const actionsCell = tr.querySelector('.cell-actions');
+
+  const cashTotalVal = parseFloat(tr.dataset.origCashTotal) || 0;
+  const cashFloatVal = parseFloat(tr.dataset.origCashFloat) || 0;
+
+  cashTotalCell.innerHTML = `<input type="number" class="edit-cash-total" min="0" step="0.01" value="${cashTotalVal}">`;
+  cashFloatCell.innerHTML = `<input type="number" class="edit-cash-float" min="0" step="0.01" value="${cashFloatVal}">`;
+
+  actionsCell.innerHTML = `
+    <button class="save-btn">Save</button>
+    <button class="cancel-btn">Cancel</button>
+  `;
+
+  actionsCell.querySelector('.save-btn').addEventListener('click', async () => {
+    await saveCashRowEdits(tr);
+  });
+  actionsCell.querySelector('.cancel-btn').addEventListener('click', () => {
+    cancelCashRowEdits(tr);
+  });
+}
+
+// Save admin row edits (haircuts + notes)
+async function saveAdminRowEdits(tr) {
+  const id = tr.dataset.id;
+  const haircuts = Number(tr.querySelector('.edit-haircuts').value) || 0;
+  const notes = tr.querySelector('.edit-notes').value || '';
+
+  // optimistic update
+  const idx = demoLogs.findIndex(l => String(l.id) === String(id));
+  const orig = idx !== -1 ? { ...demoLogs[idx] } : null;
+  if (idx !== -1) {
+    demoLogs[idx].haircuts = haircuts;
+    demoLogs[idx].notes = notes;
+  }
+
+  // update UI immediately
+  tr.querySelector('.cell-haircuts').textContent = haircuts;
+  tr.querySelector('.cell-commission').textContent = `£${calculateCommission(haircuts).toFixed(2)}`;
+  tr.querySelector('.cell-notes').textContent = notes;
+  tr.querySelector('.cell-actions').innerHTML = `<button class="edit-btn">Edit</button>`;
+  tr.querySelector('.edit-btn').addEventListener('click', () => enableAdminRowEditing(tr));
+
+  // send to server
+  try {
+    const resp = await fetch('/api/update-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        haircuts,
+        notes,
+        password: passwordInput.value
+      })
+    });
+
+    const json = await resp.json();
+    if (!resp.ok || !json.success) {
+      console.error('Update failed', json);
+      if (orig && idx !== -1) {
+        demoLogs[idx] = orig;
+      }
+      cancelAdminRowEdits(tr, /*revertToOrig=*/true);
+      alert('Update failed on server. Changes reverted.');
+      return;
+    }
+
+    // apply DB-returned data
+    const updated = json.data || {};
+    if (idx !== -1) {
+      demoLogs[idx].haircuts = Number(updated.haircuts) || demoLogs[idx].haircuts;
+      demoLogs[idx].notes = updated.notes || demoLogs[idx].notes;
+    }
+
+    refreshAdminTables();
+  } catch (err) {
+    console.error('Network error saving update', err);
+    const idx2 = demoLogs.findIndex(l => String(l.id) === String(id));
+    if (idx2 !== -1 && tr.dataset.origHaircuts) {
+      demoLogs[idx2].haircuts = Number(tr.dataset.origHaircuts) || demoLogs[idx2].haircuts;
+      demoLogs[idx2].notes = tr.dataset.origNotes || demoLogs[idx2].notes;
+    }
+    cancelAdminRowEdits(tr, /*revertToOrig=*/true);
+    alert('Network error. Changes reverted.');
+  }
+}
+
+// Save cash row edits (cash total + float)
+async function saveCashRowEdits(tr) {
+  const id = tr.dataset.id;
+  const cashTotal = Number(tr.querySelector('.edit-cash-total').value) || 0;
+  const cashFloat = Number(tr.querySelector('.edit-cash-float').value) || 0;
+
+  // optimistic update
+  const idx = demoLogs.findIndex(l => String(l.id) === String(id));
+  const orig = idx !== -1 ? { ...demoLogs[idx] } : null;
+  if (idx !== -1) {
+    demoLogs[idx].cashTotal = cashTotal;
+    demoLogs[idx].cashFloat = cashFloat;
+  }
+
+  // update UI immediately
+  tr.querySelector('.cell-cash-total').textContent = `£${cashTotal.toFixed(2)}`;
+  tr.querySelector('.cell-cash-float').textContent = `£${cashFloat.toFixed(2)}`;
+  tr.querySelector('.cell-actions').innerHTML = `<button class="edit-btn">Edit</button>`;
+  tr.querySelector('.edit-btn').addEventListener('click', () => enableCashRowEditing(tr));
+
+  // send to server
+  try {
+    const resp = await fetch('/api/update-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        cashTotal,
+        cashFloat,
+        password: passwordInput.value
+      })
+    });
+
+    const json = await resp.json();
+    if (!resp.ok || !json.success) {
+      console.error('Update failed', json);
+      if (orig && idx !== -1) {
+        demoLogs[idx] = orig;
+      }
+      cancelCashRowEdits(tr, /*revertToOrig=*/true);
+      alert('Update failed on server. Changes reverted.');
+      return;
+    }
+
+    // apply DB-returned data
+    const updated = json.data || {};
+    if (idx !== -1) {
+      demoLogs[idx].cashTotal = Number(updated.cash_total) || demoLogs[idx].cashTotal;
+      demoLogs[idx].cashFloat = Number(updated.cash_float) || demoLogs[idx].cashFloat;
+    }
+
+    refreshAdminTables();
+  } catch (err) {
+    console.error('Network error saving update', err);
+    const idx2 = demoLogs.findIndex(l => String(l.id) === String(id));
+    if (idx2 !== -1 && tr.dataset.origCashTotal) {
+      demoLogs[idx2].cashTotal = Number(tr.dataset.origCashTotal) || demoLogs[idx2].cashTotal;
+      demoLogs[idx2].cashFloat = Number(tr.dataset.origCashFloat) || demoLogs[idx2].cashFloat;
+    }
+    cancelCashRowEdits(tr, /*revertToOrig=*/true);
+    alert('Network error. Changes reverted.');
+  }
+}
+
+// Cancel admin row edits
+function cancelAdminRowEdits(tr, revertToOrig = false) {
+  const origHaircuts = tr.dataset.origHaircuts || '0';
+  const origNotes = tr.dataset.origNotes || '';
+
+  if (revertToOrig) {
+    const id = tr.dataset.id;
+    const idx = demoLogs.findIndex(l => String(l.id) === String(id));
+    if (idx !== -1) {
+      demoLogs[idx].haircuts = Number(origHaircuts) || 0;
+      demoLogs[idx].notes = origNotes;
+    }
+  }
+
+  tr.querySelector('.cell-haircuts').textContent = origHaircuts;
+  tr.querySelector('.cell-commission').textContent = `£${calculateCommission(Number(origHaircuts)).toFixed(2)}`;
+  tr.querySelector('.cell-notes').textContent = origNotes;
+
+  tr.querySelector('.cell-actions').innerHTML = `<button class="edit-btn">Edit</button>`;
+  tr.querySelector('.edit-btn').addEventListener('click', () => enableAdminRowEditing(tr));
+}
+
+// Cancel cash row edits
+function cancelCashRowEdits(tr, revertToOrig = false) {
+  const origCashTotal = tr.dataset.origCashTotal || '0';
+  const origCashFloat = tr.dataset.origCashFloat || '0';
+
+  if (revertToOrig) {
+    const id = tr.dataset.id;
+    const idx = demoLogs.findIndex(l => String(l.id) === String(id));
+    if (idx !== -1) {
+      demoLogs[idx].cashTotal = Number(origCashTotal) || 0;
+      demoLogs[idx].cashFloat = Number(origCashFloat) || 0;
+    }
+  }
+
+  tr.querySelector('.cell-cash-total').textContent = `£${Number(origCashTotal).toFixed(2)}`;
+  tr.querySelector('.cell-cash-float').textContent = `£${Number(origCashFloat).toFixed(2)}`;
+
+  tr.querySelector('.cell-actions').innerHTML = `<button class="edit-btn">Edit</button>`;
+  tr.querySelector('.edit-btn').addEventListener('click', () => enableCashRowEditing(tr));
 }
 
 // Logout buttons
