@@ -953,60 +953,71 @@ async function saveCashRowEdits(tr) {
   const cashTotal = Number(tr.querySelector('.edit-cash-total').value) || 0;
   const cashFloat = Number(tr.querySelector('.edit-cash-float').value) || 0;
 
-  // optimistic update
-  const idx = demoLogs.findIndex(l => String(l.id) === String(id));
-  const orig = idx !== -1 ? { ...demoLogs[idx] } : null;
-  if (idx !== -1) {
-    demoLogs[idx].cashTotal = cashTotal;
-    demoLogs[idx].cashFloat = cashFloat;
+  // Find the actual record to get date and shop
+  const record = demoLogs.find(l => String(l.id) === String(id));
+  if (!record) {
+    alert('Record not found');
+    return;
   }
 
-  // update UI immediately
+  // Find all records for this date/shop combination
+  const matchingRecords = demoLogs.filter(l => 
+    l.date === record.date && l.shop === record.shop
+  );
+
+  // Update all matching records optimistically
+  const originals = matchingRecords.map(r => ({ ...r }));
+  matchingRecords.forEach(r => {
+    r.cashTotal = cashTotal;
+    r.cashFloat = cashFloat;
+  });
+
+  // Update UI immediately
   tr.querySelector('.cell-cash-total').textContent = `£${cashTotal.toFixed(2)}`;
   tr.querySelector('.cell-cash-float').textContent = `£${cashFloat.toFixed(2)}`;
   tr.querySelector('.cell-actions').innerHTML = `<button class="edit-btn">Edit</button>`;
   tr.querySelector('.edit-btn').addEventListener('click', () => enableCashRowEditing(tr));
 
-  // send to server
+  // Send to server - update all matching records
   try {
-    const resp = await fetch('/api/update-report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        cashTotal,
-        cashFloat,
-        password: passwordInput.value
+    const updatePromises = matchingRecords.map(record => 
+      fetch('/api/update-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: record.id,
+          cashTotal,
+          cashFloat,
+          password: passwordInput.value
+        })
       })
-    });
+    );
 
-    const json = await resp.json();
-    if (!resp.ok || !json.success) {
-      console.error('Update failed', json);
-      if (orig && idx !== -1) {
-        demoLogs[idx] = orig;
-      }
-      cancelCashRowEdits(tr, /*revertToOrig=*/true);
+    const responses = await Promise.all(updatePromises);
+    const results = await Promise.all(responses.map(r => r.json()));
+
+    // Check if any failed
+    const failed = results.some((result, i) => !responses[i].ok || !result.success);
+    
+    if (failed) {
+      console.error('Some updates failed', results);
+      // Revert all changes
+      originals.forEach((orig, i) => {
+        Object.assign(matchingRecords[i], orig);
+      });
+      cancelCashRowEdits(tr, true);
       alert('Update failed on server. Changes reverted.');
       return;
-    }
-
-    // apply DB-returned data
-    const updated = json.data || {};
-    if (idx !== -1) {
-      demoLogs[idx].cashTotal = Number(updated.cash_total) || demoLogs[idx].cashTotal;
-      demoLogs[idx].cashFloat = Number(updated.cash_float) || demoLogs[idx].cashFloat;
     }
 
     refreshAdminTables();
   } catch (err) {
     console.error('Network error saving update', err);
-    const idx2 = demoLogs.findIndex(l => String(l.id) === String(id));
-    if (idx2 !== -1 && tr.dataset.origCashTotal) {
-      demoLogs[idx2].cashTotal = Number(tr.dataset.origCashTotal) || demoLogs[idx2].cashTotal;
-      demoLogs[idx2].cashFloat = Number(tr.dataset.origCashFloat) || demoLogs[idx2].cashFloat;
-    }
-    cancelCashRowEdits(tr, /*revertToOrig=*/true);
+    // Revert all changes
+    originals.forEach((orig, i) => {
+      Object.assign(matchingRecords[i], orig);
+    });
+    cancelCashRowEdits(tr, true);
     alert('Network error. Changes reverted.');
   }
 }
