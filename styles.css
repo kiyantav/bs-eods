@@ -663,8 +663,8 @@ input[type="number"] {
 }
 .reviews-section {
   margin-bottom: 1.5rem;
-/*   padding: 1rem; */
-/*   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  /* padding: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04); */
 }
@@ -737,3 +737,56 @@ input[type="number"] {
   .review-cards { grid-template-columns: repeat(1, 1fr); }
 }
 
+.summary-card {
+  background: var(--gray-800);
+  border: 1px solid var(--gray-700);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.summary-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--secondary-dark);
+}
+
+.summary-month {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--gray-700);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .summary-card {
+    padding: 0.75rem;
+  }
+  .summary-value {
+    font-size: 1.5rem;
+  }
+}
