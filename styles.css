@@ -773,6 +773,7 @@ input[type="number"] {
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   display: inline-block;
+  align-items: center;
 }
 
 /* Responsive adjustments */
