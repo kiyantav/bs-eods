@@ -525,7 +525,7 @@ function renderAdminDashboard() {
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     </div>
     <div style="">
-      <div id="summary-metrics" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+      <div id="summary-metrics" style="">
         <div id="total-haircuts"></div>
         <div id="total-commission"></div>
         <div id="total-cash"></div>
