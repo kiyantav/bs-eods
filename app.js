@@ -702,14 +702,38 @@ function updateSummaryMetrics(logs = demoLogs) {
   let totalHaircuts = 0;
   let totalCommission = 0;
   let totalCash = 0;
-  let totalPay = 0; // Assuming Total Pay is sum of commissions (adjust if needed)
+  
+  const countedDayRates = new Set();
+  let totalDayRates = 0;
 
-  logs.forEach(log => {
+ logs.forEach(log => {
     totalHaircuts += Number(log.haircuts) || 0;
-    totalCommission += calculateCommission(Number(log.haircuts) || 0);
+
+    const commission = calculateCommission(Number(log.haircuts) || 0);
+    totalCommission += commission;
+
     totalCash += (Number(log.cashTotal) || 0) + (Number(log.cashFloat) || 0);
-    totalPay += calculateCommission(Number(log.haircuts) || 0); // Same as commission for now
+
+    // Count the barber's day rate once per barber/date
+    const barberKey = (log.barber_id != null ? String(log.barber_id) : (log.barberName || 'unknown'));
+    const workedKey = `${barberKey}_${log.date}`;
+    if (!countedDayRates.has(workedKey)) {
+      // lookup dayRate from barbersByShopMap
+      let dayRate = 0;
+      for (const shop in barbersByShopMap) {
+        const found = barbersByShopMap[shop].find(b => (b.id != null && String(b.id) === String(log.barber_id)) || b.name === log.barberName);
+        if (found) {
+          dayRate = Number(found.dayRate) || 0;
+          break;
+        }
+      }
+      totalDayRates += dayRate;
+      countedDayRates.add(workedKey);
+    }
   });
+
+  // Total pay = wages (day rates) + commissions
+  const totalPay = totalDayRates + totalCommission;
 
   // Update HTML elements (assuming these IDs exist in your HTML)
   document.getElementById('total-haircuts').innerHTML = `
