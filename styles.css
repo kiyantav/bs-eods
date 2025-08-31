@@ -750,7 +750,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  text-align: center;
+  text-align: flex-start;
 }
 
 .summary-label {
@@ -783,4 +783,16 @@ input[type="number"] {
   .summary-value {
     font-size: 1.5rem;
   }
+}
+
+#summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 1100px) {
+  #summary-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+  #summary-metrics { grid-template-columns: repeat(1, 1fr); }
 }
