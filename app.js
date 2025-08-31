@@ -525,10 +525,11 @@ function renderAdminDashboard() {
       <button id="logout-btn-admin" class="btn-secondary">Logout</button>
     </div>
     <div style="">
-     <div class="summary-metrics" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
-        <div>Total Haircuts: <span id="total-haircuts">0</span></div>
-        <div>Total Commission (£): <span id="total-commission">0</span></div>
-        <div>Total Cash (£): <span id="total-cash">0</span></div>
+      <div id="summary-metrics" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        <div id="total-haircuts"></div>
+        <div id="total-commission"></div>
+        <div id="total-cash"></div>
+        <div id="total-pay"></div>
       </div>
        <section id="reviews-section" class="reviews-section">
           <div class="reviews-header">
