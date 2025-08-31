@@ -691,21 +691,66 @@ dateRangeInput.addEventListener("changeDate", refreshAdminTables);
 
 }
 
-function updateSummaryMetrics(logs) {
-  const totalHaircuts = logs.reduce((sum, log) => sum + log.haircuts, 0);
-  const totalCommission = logs.reduce((sum, log) => sum + calculateCommission(log.haircuts), 0);
-  const uniqueCashEntries = {};
-  logs.forEach(log => {
-    const key = `${log.shop}_${log.date}`;
-    if (!uniqueCashEntries[key] && log.cashTotal !== undefined) {
-      uniqueCashEntries[key] = log.cashTotal;
-    }
-  });
-  const totalCash = Object.values(uniqueCashEntries).reduce((sum, val) => sum + val, 0);
+function updateSummaryMetrics(logs = demoLogs) {
+  // Get current month/year for the tag
+  const now = new Date();
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const currentMonth = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
 
-  document.getElementById("total-haircuts").textContent = totalHaircuts;
-  document.getElementById("total-commission").textContent = `£${totalCommission.toFixed(2)}`;
-  document.getElementById("total-cash").textContent = `£${totalCash.toFixed(2)}`;
+  // Calculate totals
+  let totalHaircuts = 0;
+  let totalCommission = 0;
+  let totalCash = 0;
+  let totalPay = 0; // Assuming Total Pay is sum of commissions (adjust if needed)
+
+  logs.forEach(log => {
+    totalHaircuts += Number(log.haircuts) || 0;
+    totalCommission += calculateCommission(Number(log.haircuts) || 0);
+    totalCash += (Number(log.cashTotal) || 0) + (Number(log.cashFloat) || 0);
+    totalPay += calculateCommission(Number(log.haircuts) || 0); // Same as commission for now
+  });
+
+  // Update HTML elements (assuming these IDs exist in your HTML)
+  document.getElementById('total-haircuts').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-inner">
+        <div class="summary-label">Total Haircuts</div>
+        <div class="summary-value">${totalHaircuts}</div>
+        <div class="summary-month">${currentMonth}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('total-commission').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-inner">
+        <div class="summary-label">Total Commission</div>
+        <div class="summary-value">£${totalCommission.toFixed(2)}</div>
+        <div class="summary-month">${currentMonth}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('total-cash').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-inner">
+        <div class="summary-label">Total Cash</div>
+        <div class="summary-value">£${totalCash.toFixed(2)}</div>
+        <div class="summary-month">${currentMonth}</div>
+      </div>
+    </div>
+  `;
+
+  // New: Total Pay summary
+  document.getElementById('total-pay').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-inner">
+        <div class="summary-label">Total Pay</div>
+        <div class="summary-value">£${totalPay.toFixed(2)}</div>
+        <div class="summary-month">${currentMonth}</div>
+      </div>
+    </div>
+  `;
 }
 
 function filterLogsByShopAndBarber() {
