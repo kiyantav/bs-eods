@@ -738,18 +738,12 @@ input[type="number"] {
 }
 
 .summary-card {
-  background: var(--gray-800);
-  border: 1px solid var(--gray-700);
+  background: var(--primary-dark);
+  border: 1px solid rgba(255,255,255,0.03);
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.6rem;
+  min-width: 160px;
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin-bottom: 1rem;
-}
-
-.summary-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
 }
 
 .summary-card-inner {
