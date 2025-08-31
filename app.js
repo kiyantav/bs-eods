@@ -706,6 +706,8 @@ function updateSummaryMetrics(logs = demoLogs) {
   const countedDayRates = new Set();
   let totalDayRates = 0;
 
+   const cashGroups = {};
+
  logs.forEach(log => {
     totalHaircuts += Number(log.haircuts) || 0;
 
@@ -715,7 +717,7 @@ function updateSummaryMetrics(logs = demoLogs) {
     totalCash += (Number(log.cashTotal) || 0) + (Number(log.cashFloat) || 0);
 
     // Count the barber's day rate once per barber/date
-    const barberKey = (log.barber_id != null ? String(log.barber_id) : (log.barberName || 'unknown'));
+   const barberKey = (log.barber_id != null ? String(log.barber_id) : (log.barberName || 'unknown'));
     const workedKey = `${barberKey}_${log.date}`;
     if (!countedDayRates.has(workedKey)) {
       // lookup dayRate from barbersByShopMap
@@ -730,7 +732,18 @@ function updateSummaryMetrics(logs = demoLogs) {
       totalDayRates += dayRate;
       countedDayRates.add(workedKey);
     }
+
+    // collect cash_total per date+shop (first occurrence wins)
+    const cashKey = `${log.date}_${log.shop}`;
+    if (!cashGroups[cashKey]) {
+      cashGroups[cashKey] = {
+        cashTotal: Number(log.cashTotal) || 0
+        // intentionally exclude cashFloat here
+      };
+    }
   });
+
+  totalCash = Object.values(cashGroups).reduce((sum, g) => sum + (g.cashTotal || 0), 0);
 
   // Total pay = wages (day rates) + commissions
   const totalPay = totalDayRates + totalCommission;
