@@ -862,7 +862,7 @@ function updateWeeklySummary(logs = demoLogs) {
   const todayIso = new Date().toISOString().slice(0,10);
   const weekStart = getMonday(todayIso); // returns YYYY-MM-DD for Monday
   const weekEndDate = new Date(weekStart);
-  weekEndDate.setDate(weekEndDate.getDate() + 7);
+  weekEndDate.setDate(weekEndDate.getDate() + 8);
   const weekEnd = weekEndDate.toISOString().slice(0,10);
 
   // filter logs to current week only
