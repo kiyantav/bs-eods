@@ -859,13 +859,19 @@ function updateWeeklySummary(logs = demoLogs) {
   const tbody = document.querySelector("#weekly-summary-table tbody");
   tbody.innerHTML = "";
 
-  const todayIso = new Date().toISOString().slice(0,10);
-  const weekStart = getMonday(todayIso); // returns YYYY-MM-DD for Monday
+  // If today is Monday, keep showing the previous week.
+  // On Tuesday+ show the current week as before.
+  const today = new Date();
+  const todayDay = today.getDay(); // 0=Sun,1=Mon...
+  const refDate = (todayDay === 1) ? new Date(today.getTime() - 24 * 60 * 60 * 1000) : today;
+  const todayIso = refDate.toISOString().slice(0,10);
+
+  const weekStart = getMonday(todayIso); // Monday for refDate
   const weekEndDate = new Date(weekStart);
-  weekEndDate.setDate(weekEndDate.getDate() + 8);
+  weekEndDate.setDate(weekEndDate.getDate() + 6);
   const weekEnd = weekEndDate.toISOString().slice(0,10);
 
-  // filter logs to current week only
+  // filter logs to the chosen week
   const currentWeekLogs = (logs || demoLogs).filter(log => {
     return log.date >= weekStart && log.date <= weekEnd;
   });
