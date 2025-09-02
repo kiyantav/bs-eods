@@ -13,7 +13,8 @@ export default async function handler(req, res) {
     shop,
     templateName,
     templateParams,
-    templateLanguage = 'en'
+    templateLanguage = 'en',
+    templateComponents
   } = req.body || {};
 
   console.log('send-whatsapp: incoming body keys =', Object.keys(req.body || {}));
@@ -63,29 +64,8 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-     let payload;
+let payload;
   if (templateName) {
-    const params = Array.isArray(templateParams) ? templateParams : [];
-    
-    // Build parameters with correct Meta API format: parameter_name + text
-    const bodyParameters = params.map((p, index) => {
-      if (p && typeof p === 'object' && p.value !== undefined) {
-        // Use the parameter_name from client (or name field)
-        const paramName = p.parameter_name || p.name || `param_${index + 1}`;
-        return {
-          type: 'text',
-          parameter_name: String(paramName),
-          text: String(p.value || '')
-        };
-      }
-      // Handle simple strings - use generic parameter names
-      return {
-        type: 'text',
-        parameter_name: `param_${index + 1}`,
-        text: String(p || '')
-      };
-    });
-
     payload = {
       messaging_product: 'whatsapp',
       to: recipient,
@@ -96,15 +76,33 @@ export default async function handler(req, res) {
       }
     };
 
-    // Add components with correct BODY type (uppercase)
-    if (bodyParameters.length > 0) {
-      payload.template.components = [{
-        type: 'BODY',
-        parameters: bodyParameters
-      }];
+    // If client supplied full components (header/body), use them (map values -> {type:'text', text:...})
+    if (Array.isArray(templateComponents) && templateComponents.length > 0) {
+      const mappedComponents = templateComponents.map(comp => {
+        const compType = String((comp.type || 'body')).toUpperCase();
+        const params = Array.isArray(comp.parameters) ? comp.parameters.map(p => {
+          // p may be simple string or { value/text/parameter_name/name }
+          const val = (p && typeof p === 'object') ? (p.value ?? p.text ?? '') : p;
+          return { type: 'text', text: String(val ?? '') };
+        }) : [];
+        return { type: compType, parameters: params };
+      });
+      payload.template.components = mappedComponents;
+      console.log('send-whatsapp: using templateComponents from client, components=', mappedComponents.length);
+    } else {
+      // fallback: build single BODY component from templateParams (positional)
+      const params = Array.isArray(templateParams) ? templateParams : [];
+      const bodyParameters = params.map(p => {
+        if (p && typeof p === 'object') return { type: 'text', text: String(p.value ?? p.text ?? '') };
+        return { type: 'text', text: String(p ?? '') };
+      });
+      if (bodyParameters.length > 0) {
+        payload.template.components = [{ type: 'BODY', parameters: bodyParameters }];
+        console.log('send-whatsapp: built BODY component from templateParams, count=', bodyParameters.length);
+      } else {
+        console.log('send-whatsapp: template has no params supplied (components empty)');
+      }
     }
-
-    console.log('send-whatsapp: prepared template payload, paramsCount=', bodyParameters.length);
   } else {
     payload = {
       messaging_product: 'whatsapp',
