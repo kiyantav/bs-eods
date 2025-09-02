@@ -67,17 +67,19 @@ export default async function handler(req, res) {
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
     
-    // Build simple positional parameters (no "name" field)
-    const bodyParameters = params.map((p, i) => {
+    // Extract values from named objects and build simple positional parameters
+    const bodyParameters = params.map(p => {
       if (p && typeof p === 'object' && p.value !== undefined) {
-        // Handle named objects from client: {name: 'shop_name', value: 'Islington'}
         return { type: 'text', text: String(p.value || '') };
       }
-      // Handle simple strings: "Islington"
       return { type: 'text', text: String(p || '') };
     });
 
-    const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
+    // Only include components if we have parameters
+    const components = bodyParameters.length > 0 ? [{
+      type: 'body',
+      parameters: bodyParameters
+    }] : [];
 
     payload = {
       messaging_product: 'whatsapp',
@@ -85,10 +87,15 @@ export default async function handler(req, res) {
       type: 'template',
       template: {
         name: String(templateName),
-        language: { code: String(templateLanguage || 'en') },
-        ...(components.length ? { components } : {})
+        language: { code: String(templateLanguage || 'en') }
       }
     };
+
+    // Only add components if we have them
+    if (components.length > 0) {
+      payload.template.components = components;
+    }
+
     console.log('send-whatsapp: prepared template payload (templateName masked), paramsCount=', bodyParameters.length);
   } else {
     payload = {
