@@ -303,6 +303,28 @@ function showConfirmationModal(rowsToInsert) {
       } catch (err) {
         console.error("Failed to send notification email:", err);
       }
+         try {
+          const whatsappPayload = {
+            message: `Daily report submitted for ${shopName} on ${date} — Cash: £${cashTotal}.`
+          };
+          const waResp = await fetch('/api/send-whatsapp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(whatsappPayload)
+          });
+
+          const waText = await waResp.text();
+          let waJson = null;
+          try { waJson = JSON.parse(waText); } catch (e) { /* not JSON */ }
+
+          if (waResp.ok) {
+            console.log('WhatsApp sent:', waResp.status, waJson ?? waText);
+          } else {
+            console.error('WhatsApp failed:', waResp.status, waJson ?? waText);
+          }
+        } catch (waErr) {
+          console.error('WhatsApp send failed', waErr);
+        }
 
         const successModal = document.getElementById("success-modal");
         successModal.style.display = "flex";
