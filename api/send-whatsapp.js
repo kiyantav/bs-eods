@@ -63,23 +63,31 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-  let payload;
+   let payload;
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
     
-    // Extract values from named objects and build simple positional parameters
-    const bodyParameters = params.map(p => {
+    // Build parameters with names for named placeholders like {{shop_name}}, {{report_date}}, etc.
+    const bodyParameters = params.map((p, index) => {
+      let text = '';
+      let name = '';
+      
       if (p && typeof p === 'object' && p.value !== undefined) {
-        return { type: 'text', text: String(p.value || '') };
+        text = String(p.value || '');
+        name = String(p.name || ''); // use the name from client payload
+      } else {
+        text = String(p || '');
+        name = String(index + 1); // fallback to numbered if no name
       }
-      return { type: 'text', text: String(p || '') };
+      
+      return {
+        type: 'text',
+        text: text,
+        name: name
+      };
     });
 
-    // Only include components if we have parameters
-    const components = bodyParameters.length > 0 ? [{
-      type: 'body',
-      parameters: bodyParameters
-    }] : [];
+    const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
 
     payload = {
       messaging_product: 'whatsapp',
@@ -87,15 +95,10 @@ export default async function handler(req, res) {
       type: 'template',
       template: {
         name: String(templateName),
-        language: { code: String(templateLanguage || 'en') }
+        language: { code: String(templateLanguage || 'en') },
+        ...(components.length ? { components } : {})
       }
     };
-
-    // Only add components if we have them
-    if (components.length > 0) {
-      payload.template.components = components;
-    }
-
     console.log('send-whatsapp: prepared template payload (templateName masked), paramsCount=', bodyParameters.length);
   } else {
     payload = {
