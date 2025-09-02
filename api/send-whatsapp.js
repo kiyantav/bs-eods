@@ -18,7 +18,6 @@ export default async function handler(req, res) {
 
   console.log('send-whatsapp: incoming body keys =', Object.keys(req.body || {}));
 
-  // Validate payload: either plain message or templateName required
   if (!message && !templateName) {
     console.log('send-whatsapp: missing message AND templateName');
     return res.status(400).json({ error: 'Missing message or templateName' });
@@ -32,18 +31,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Missing WHATSAPP_TOKEN or WHATSAPP_PHONE_ID' });
   }
 
-  // Determine recipient:
-  // 1) use to from request (preferred)
-  // 2) map shop -> recipient via SHOP_RECIPIENTS_JSON env (optional)
-  // 3) fallback to DEFAULT_WHATSAPP_TO env
+  // Resolve recipient
   let recipient = null;
   if (typeof to === 'string' && to.trim()) {
     recipient = to.replace(/^\+/, '').trim();
     console.log('send-whatsapp: using "to" from request (masked)');
   }
-
   if (!recipient && shop) {
-    // optional: set SHOP_RECIPIENTS_JSON='{"islington":"4477...","richmond":"4477..."}'
     try {
       const mapJson = process.env.SHOP_RECIPIENTS_JSON || '{}';
       const shopMap = JSON.parse(mapJson);
@@ -57,12 +51,10 @@ export default async function handler(req, res) {
       console.log('send-whatsapp: failed to parse SHOP_RECIPIENTS_JSON', e.message);
     }
   }
-
   if (!recipient && process.env.DEFAULT_WHATSAPP_TO) {
     recipient = String(process.env.DEFAULT_WHATSAPP_TO).replace(/^\+/, '').trim();
     console.log('send-whatsapp: using DEFAULT_WHATSAPP_TO (masked)');
   }
-
   if (!recipient) {
     console.log('send-whatsapp: no recipient available, aborting');
     return res.status(400).json({ error: 'Missing recipient. Provide "to" in body, map shop in SHOP_RECIPIENTS_JSON, or set DEFAULT_WHATSAPP_TO env.' });
@@ -70,13 +62,42 @@ export default async function handler(req, res) {
 
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
-  // Build payload: template if templateName provided, else text
+  // Build payload
   let payload;
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
-    const components = params.length
-      ? [{ type: 'body', parameters: params.map(p => ({ type: 'text', text: String(p) })) }]
-      : [];
+
+    // Support two input shapes:
+    // - positional strings: ["Islington","2025-09-02",...]
+    // - named objects: [{ name: "shop_name", value: "Islington" }, { name: "report_date", value: "..." }]
+    const bodyParameters = params.map((p, i) => {
+      if (p && typeof p === 'object') {
+        const name = String(p.name || '').trim();
+        const val = String(p.value ?? p.text ?? '').trim();
+        if (!name) {
+          throw new Error(`template param at index ${i} missing "name"`);
+        }
+        return { name, type: 'text', text: val };
+      }
+      // positional
+      return { type: 'text', text: String(p ?? '') };
+    });
+
+    // validate named params not empty
+    const hasNamed = params.some(p => p && typeof p === 'object' && !!p.name);
+    if (hasNamed) {
+      // ensure none have empty name
+      for (let i = 0; i < params.length; i++) {
+        const p = params[i];
+        if (p && typeof p === 'object') {
+          if (!String(p.name || '').trim()) {
+            return res.status(400).json({ error: `template param at index ${i} missing name` });
+          }
+        }
+      }
+    }
+
+    const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
 
     payload = {
       messaging_product: 'whatsapp',
@@ -88,7 +109,7 @@ export default async function handler(req, res) {
         ...(components.length ? { components } : {})
       }
     };
-    console.log('send-whatsapp: prepared template payload (templateName masked)');
+    console.log('send-whatsapp: prepared template payload (templateName masked), paramsCount=', bodyParameters.length);
   } else {
     payload = {
       messaging_product: 'whatsapp',
@@ -99,7 +120,6 @@ export default async function handler(req, res) {
     console.log('send-whatsapp: prepared text payload (message length =', String(message).length, ')');
   }
 
-  // Log summary (mask recipient)
   console.log('send-whatsapp: sending request to provider', {
     url,
     payloadSummary: { messaging_product: payload.messaging_product, to: '[REDACTED]', type: payload.type }
@@ -118,7 +138,6 @@ export default async function handler(req, res) {
     const text = await resp.text();
     console.log('send-whatsapp: provider response status=', resp.status);
 
-    // Try parse provider JSON, log and forward it
     try {
       const json = JSON.parse(text);
       console.log('send-whatsapp: provider response body json=', json);
