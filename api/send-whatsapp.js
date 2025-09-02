@@ -63,28 +63,18 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-   let payload;
+     let payload;
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
     
-    // Build parameters with names for named placeholders like {{shop_name}}, {{report_date}}, etc.
+    // Build simple parameters without names (Meta API doesn't accept name field)
     const bodyParameters = params.map((p, index) => {
-      let text = '';
-      let name = '';
-      
       if (p && typeof p === 'object' && p.value !== undefined) {
-        text = String(p.value || '');
-        name = String(p.name || ''); // use the name from client payload
-      } else {
-        text = String(p || '');
-        name = String(index + 1); // fallback to numbered if no name
+        // Extract value from named objects: {name: 'shop_name', value: 'Islington'}
+        return { type: 'text', text: String(p.value || '') };
       }
-      
-      return {
-        type: 'text',
-        text: text,
-        name: name
-      };
+      // Handle simple strings: "Islington"
+      return { type: 'text', text: String(p || '') };
     });
 
     const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
