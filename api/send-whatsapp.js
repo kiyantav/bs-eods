@@ -63,33 +63,20 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-     let payload;
+    let payload;
   if (templateName) {
-    const params = Array.isArray(templateParams) ? templateParams : [];
-    
-    // Build simple parameters without names (Meta API doesn't accept name field)
-    const bodyParameters = params.map((p, index) => {
-      if (p && typeof p === 'object' && p.value !== undefined) {
-        // Extract value from named objects: {name: 'shop_name', value: 'Islington'}
-        return { type: 'text', text: String(p.value || '') };
-      }
-      // Handle simple strings: "Islington"
-      return { type: 'text', text: String(p || '') };
-    });
-
-    const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
-
+    // Minimal template test - no parameters first
     payload = {
       messaging_product: 'whatsapp',
       to: recipient,
       type: 'template',
       template: {
         name: String(templateName),
-        language: { code: String(templateLanguage || 'en') },
-        ...(components.length ? { components } : {})
+        language: { code: String(templateLanguage || 'en') }
+        // no components/parameters for now
       }
     };
-    console.log('send-whatsapp: prepared template payload (templateName masked), paramsCount=', bodyParameters.length);
+    console.log('send-whatsapp: prepared simple template payload (no params)');
   } else {
     payload = {
       messaging_product: 'whatsapp',
