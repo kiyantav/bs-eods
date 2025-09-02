@@ -84,7 +84,7 @@ export default async function handler(req, res) {
       type: 'template',
       template: {
         name: String(templateName),
-        language: { code: String(templateLanguage || 'en_US') },
+        language: { code: String(templateLanguage || 'en') },
         ...(components.length ? { components } : {})
       }
     };
