@@ -304,8 +304,16 @@ function showConfirmationModal(rowsToInsert) {
         console.error("Failed to send notification email:", err);
       }
          try {
-          const whatsappPayload = {
-            message: `Daily report submitted for ${shopName} on ${date} — Cash: £${cashTotal}.`
+            const whatsappPayload = {
+            templateName: 'daily_submission',
+            templateLanguage: 'en_US',
+            templateParams: [
+              shopName, // {{shop_name}}
+              date,     // {{report_date}}
+              `£${cashTotal}`, // {{cash_total}}
+              rowsToInsert.map(r => `${getBarberNameById(r.barber_id) || r.barberName}:${r.haircuts}`).join(', ') // {{barber_list}}
+            ],
+            shop: shopSelect.value // optional: allows server to map recipient by shop
           };
           const waResp = await fetch('/api/send-whatsapp', {
             method: 'POST',
