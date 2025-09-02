@@ -63,18 +63,27 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-      let payload;
+     let payload;
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
     
-    // Build simple positional parameters without names
+    // Build parameters with correct Meta API format: parameter_name + text
     const bodyParameters = params.map((p, index) => {
       if (p && typeof p === 'object' && p.value !== undefined) {
-        // Extract value from named objects: {name: 'shop_name', value: 'Islington'}
-        return { type: 'text', text: String(p.value || '') };
+        // Use the parameter_name from client (or name field)
+        const paramName = p.parameter_name || p.name || `param_${index + 1}`;
+        return {
+          type: 'text',
+          parameter_name: String(paramName),
+          text: String(p.value || '')
+        };
       }
-      // Handle simple strings: "Islington"
-      return { type: 'text', text: String(p || '') };
+      // Handle simple strings - use generic parameter names
+      return {
+        type: 'text',
+        parameter_name: `param_${index + 1}`,
+        text: String(p || '')
+      };
     });
 
     payload = {
@@ -87,9 +96,12 @@ export default async function handler(req, res) {
       }
     };
 
-    // Only add components if we have parameters
+    // Add components with correct BODY type (uppercase)
     if (bodyParameters.length > 0) {
-      payload.template.components = [{ type: 'body', parameters: bodyParameters }];
+      payload.template.components = [{
+        type: 'BODY',
+        parameters: bodyParameters
+      }];
     }
 
     console.log('send-whatsapp: prepared template payload, paramsCount=', bodyParameters.length);
