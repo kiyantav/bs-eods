@@ -66,36 +66,16 @@ export default async function handler(req, res) {
   let payload;
   if (templateName) {
     const params = Array.isArray(templateParams) ? templateParams : [];
-
-    // Support two input shapes:
-    // - positional strings: ["Islington","2025-09-02",...]
-    // - named objects: [{ name: "shop_name", value: "Islington" }, { name: "report_date", value: "..." }]
+    
+    // Build simple positional parameters (no "name" field)
     const bodyParameters = params.map((p, i) => {
-      if (p && typeof p === 'object') {
-        const name = String(p.name || '').trim();
-        const val = String(p.value ?? p.text ?? '').trim();
-        if (!name) {
-          throw new Error(`template param at index ${i} missing "name"`);
-        }
-        return { name, type: 'text', text: val };
+      if (p && typeof p === 'object' && p.value !== undefined) {
+        // Handle named objects from client: {name: 'shop_name', value: 'Islington'}
+        return { type: 'text', text: String(p.value || '') };
       }
-      // positional
-      return { type: 'text', text: String(p ?? '') };
+      // Handle simple strings: "Islington"
+      return { type: 'text', text: String(p || '') };
     });
-
-    // validate named params not empty
-    const hasNamed = params.some(p => p && typeof p === 'object' && !!p.name);
-    if (hasNamed) {
-      // ensure none have empty name
-      for (let i = 0; i < params.length; i++) {
-        const p = params[i];
-        if (p && typeof p === 'object') {
-          if (!String(p.name || '').trim()) {
-            return res.status(400).json({ error: `template param at index ${i} missing name` });
-          }
-        }
-      }
-    }
 
     const components = bodyParameters.length ? [{ type: 'body', parameters: bodyParameters }] : [];
 
