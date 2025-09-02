@@ -63,9 +63,20 @@ export default async function handler(req, res) {
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
 
   // Build payload
-    let payload;
+      let payload;
   if (templateName) {
-    // Minimal template test - no parameters first
+    const params = Array.isArray(templateParams) ? templateParams : [];
+    
+    // Build simple positional parameters without names
+    const bodyParameters = params.map((p, index) => {
+      if (p && typeof p === 'object' && p.value !== undefined) {
+        // Extract value from named objects: {name: 'shop_name', value: 'Islington'}
+        return { type: 'text', text: String(p.value || '') };
+      }
+      // Handle simple strings: "Islington"
+      return { type: 'text', text: String(p || '') };
+    });
+
     payload = {
       messaging_product: 'whatsapp',
       to: recipient,
@@ -73,10 +84,15 @@ export default async function handler(req, res) {
       template: {
         name: String(templateName),
         language: { code: String(templateLanguage || 'en') }
-        // no components/parameters for now
       }
     };
-    console.log('send-whatsapp: prepared simple template payload (no params)');
+
+    // Only add components if we have parameters
+    if (bodyParameters.length > 0) {
+      payload.template.components = [{ type: 'body', parameters: bodyParameters }];
+    }
+
+    console.log('send-whatsapp: prepared template payload, paramsCount=', bodyParameters.length);
   } else {
     payload = {
       messaging_product: 'whatsapp',
