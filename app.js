@@ -306,7 +306,7 @@ function showConfirmationModal(rowsToInsert) {
          try {
             const whatsappPayload = {
             templateName: 'daily_submission',
-            templateLanguage: 'English',
+            templateLanguage: 'en',
             templateParams: [
               shopName, // {{shop_name}}
               date,     // {{report_date}}
