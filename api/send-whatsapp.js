@@ -77,24 +77,28 @@ let payload;
     };
 
     // If client supplied full components (header/body), use them (map values -> {type:'text', text:...})
-    if (Array.isArray(templateComponents) && templateComponents.length > 0) {
+      if (Array.isArray(templateComponents) && templateComponents.length > 0) {
       const mappedComponents = templateComponents.map(comp => {
         const compType = String((comp.type || 'body')).toUpperCase();
         const params = Array.isArray(comp.parameters) ? comp.parameters.map(p => {
-          // p may be simple string or { value/text/parameter_name/name }
           const val = (p && typeof p === 'object') ? (p.value ?? p.text ?? '') : p;
-          return { type: 'text', text: String(val ?? '') };
+          const paramName = (p && typeof p === 'object') ? (p.parameter_name ?? p.name ?? '') : '';
+          const paramObj = { type: 'text', text: String(val ?? '') };
+          if (paramName) paramObj.parameter_name = String(paramName);
+          return paramObj;
         }) : [];
         return { type: compType, parameters: params };
       });
       payload.template.components = mappedComponents;
       console.log('send-whatsapp: using templateComponents from client, components=', mappedComponents.length);
     } else {
-      // fallback: build single BODY component from templateParams (positional)
       const params = Array.isArray(templateParams) ? templateParams : [];
       const bodyParameters = params.map(p => {
-        if (p && typeof p === 'object') return { type: 'text', text: String(p.value ?? p.text ?? '') };
-        return { type: 'text', text: String(p ?? '') };
+        const val = (p && typeof p === 'object') ? (p.value ?? p.text ?? '') : p;
+        const paramName = (p && typeof p === 'object') ? (p.parameter_name ?? p.name ?? '') : '';
+        const paramObj = { type: 'text', text: String(val ?? '') };
+        if (paramName) paramObj.parameter_name = String(paramName);
+        return paramObj;
       });
       if (bodyParameters.length > 0) {
         payload.template.components = [{ type: 'BODY', parameters: bodyParameters }];
