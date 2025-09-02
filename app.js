@@ -305,22 +305,22 @@ function showConfirmationModal(rowsToInsert) {
       }
          try {
           const barberList = rowsToInsert.map(r => `${getBarberNameById(r.barber_id) || r.barberName}:${r.haircuts}`).join(', ');
-          const templateComponents = [
-            { type: 'header', parameters: [ { type: 'text', text: date } ] },
-            { type: 'body', parameters: [
-                { type: 'text', text: shopName },
-                { type: 'text', text: date },
-                { type: 'text', text: `£${cashTotal}` },
-                { type: 'text', text: barberList }
-              ] }
-          ];
+         const templateComponents = [
+          { type: 'header', parameters: [ { type: 'text', parameter_name: 'report_date', text: date } ] },
+          { type: 'body', parameters: [
+              { type: 'text', parameter_name: 'shop_name', text: shopName },
+              { type: 'text', parameter_name: 'report_date', text: date },
+              { type: 'text', parameter_name: 'cash_total', text: `£${cashTotal}` },
+              { type: 'text', parameter_name: 'barber_list', text: barberList }
+            ] }
+        ];
 
-          const whatsappPayload = {
-            templateName: 'daily_submission',
-            templateLanguage: 'en', // your template language code
-            templateComponents,     // send the explicit components
-            shop: shopSelect.value
-          };
+        const whatsappPayload = {
+          templateName: 'daily_submission',
+          templateLanguage: 'en',
+          templateComponents,
+          shop: shopSelect.value
+        };
 
           const waResp = await fetch('/api/send-whatsapp', {
             method: 'POST',
