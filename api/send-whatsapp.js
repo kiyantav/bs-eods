@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     shop,
     templateName,
     templateParams,
-    templateLanguage = 'English'
+    templateLanguage = 'en'
   } = req.body || {};
 
   console.log('send-whatsapp: incoming body keys =', Object.keys(req.body || {}));
