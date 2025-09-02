@@ -1,16 +1,27 @@
 export default async function handler(req, res) {
+  // Diagnostic logging (do not log secrets)
   console.log('send-whatsapp: called, method=', req.method);
-  console.log('send-whatsapp: raw body=', req.body);
 
   if (req.method !== 'POST') {
     console.log('send-whatsapp: wrong method');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { to, message, shop } = req.body || {};
-  if (!message) {
-    console.log('send-whatsapp: missing message field');
-    return res.status(400).json({ error: 'Missing message' });
+  const {
+    to,
+    message,
+    shop,
+    templateName,
+    templateParams,
+    templateLanguage = 'en_US'
+  } = req.body || {};
+
+  console.log('send-whatsapp: incoming body keys =', Object.keys(req.body || {}));
+
+  // Validate payload: either plain message or templateName required
+  if (!message && !templateName) {
+    console.log('send-whatsapp: missing message AND templateName');
+    return res.status(400).json({ error: 'Missing message or templateName' });
   }
 
   const token = process.env.WHATSAPP_TOKEN;
@@ -21,48 +32,93 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Missing WHATSAPP_TOKEN or WHATSAPP_PHONE_ID' });
   }
 
-  const defaultTo = process.env.DEFAULT_WHATSAPP_TO || null;
-
-  // determine recipient (do not log final recipient if null)
+  // Determine recipient:
+  // 1) use to from request (preferred)
+  // 2) map shop -> recipient via SHOP_RECIPIENTS_JSON env (optional)
+  // 3) fallback to DEFAULT_WHATSAPP_TO env
   let recipient = null;
-  if (to) recipient = String(to).replace(/^\+/, '').trim();
-  if (!recipient && shop) {
-    // recipient = SHOP_RECIPIENTS[shop] ? SHOP_RECIPIENTS[shop].replace(/^\+/, '') : null;
-    recipient = null;
-    console.log('send-whatsapp: shop provided but no SHOP_RECIPIENTS configured', shop);
+  if (typeof to === 'string' && to.trim()) {
+    recipient = to.replace(/^\+/, '').trim();
+    console.log('send-whatsapp: using "to" from request (masked)');
   }
-  if (!recipient && defaultTo) recipient = String(defaultTo).replace(/^\+/, '').trim();
 
-  console.log('send-whatsapp: resolved recipient present?', !!recipient, recipient ? '[REDACTED]' : null);
+  if (!recipient && shop) {
+    // optional: set SHOP_RECIPIENTS_JSON='{"islington":"4477...","richmond":"4477..."}'
+    try {
+      const mapJson = process.env.SHOP_RECIPIENTS_JSON || '{}';
+      const shopMap = JSON.parse(mapJson);
+      if (shopMap && shopMap[shop]) {
+        recipient = String(shopMap[shop]).replace(/^\+/, '').trim();
+        console.log('send-whatsapp: resolved recipient from SHOP_RECIPIENTS_JSON for shop (masked)');
+      } else {
+        console.log('send-whatsapp: shop provided but not found in SHOP_RECIPIENTS_JSON', shop);
+      }
+    } catch (e) {
+      console.log('send-whatsapp: failed to parse SHOP_RECIPIENTS_JSON', e.message);
+    }
+  }
+
+  if (!recipient && process.env.DEFAULT_WHATSAPP_TO) {
+    recipient = String(process.env.DEFAULT_WHATSAPP_TO).replace(/^\+/, '').trim();
+    console.log('send-whatsapp: using DEFAULT_WHATSAPP_TO (masked)');
+  }
+
   if (!recipient) {
     console.log('send-whatsapp: no recipient available, aborting');
-    return res.status(400).json({ error: 'Missing recipient. Provide "to" in body or set DEFAULT_WHATSAPP_TO env.' });
+    return res.status(400).json({ error: 'Missing recipient. Provide "to" in body, map shop in SHOP_RECIPIENTS_JSON, or set DEFAULT_WHATSAPP_TO env.' });
   }
 
   const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
-  const payload = {
-    messaging_product: 'whatsapp',
-    to: recipient,
-    type: 'text',
-    text: { body: message }
-  };
 
-  console.log('send-whatsapp: sending request to provider', { url, payload: { messaging_product: payload.messaging_product, to: '[REDACTED]', type: payload.type } });
+  // Build payload: template if templateName provided, else text
+  let payload;
+  if (templateName) {
+    const params = Array.isArray(templateParams) ? templateParams : [];
+    const components = params.length
+      ? [{ type: 'body', parameters: params.map(p => ({ type: 'text', text: String(p) })) }]
+      : [];
+
+    payload = {
+      messaging_product: 'whatsapp',
+      to: recipient,
+      type: 'template',
+      template: {
+        name: String(templateName),
+        language: { code: String(templateLanguage || 'en_US') },
+        ...(components.length ? { components } : {})
+      }
+    };
+    console.log('send-whatsapp: prepared template payload (templateName masked)');
+  } else {
+    payload = {
+      messaging_product: 'whatsapp',
+      to: recipient,
+      type: 'text',
+      text: { body: String(message) }
+    };
+    console.log('send-whatsapp: prepared text payload (message length =', String(message).length, ')');
+  }
+
+  // Log summary (mask recipient)
+  console.log('send-whatsapp: sending request to provider', {
+    url,
+    payloadSummary: { messaging_product: payload.messaging_product, to: '[REDACTED]', type: payload.type }
+  });
 
   try {
     const resp = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // do not log token
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     });
 
     const text = await resp.text();
-    // Log provider response body (may contain error details)
     console.log('send-whatsapp: provider response status=', resp.status);
-    // try parse JSON for nicer logging
+
+    // Try parse provider JSON, log and forward it
     try {
       const json = JSON.parse(text);
       console.log('send-whatsapp: provider response body json=', json);
@@ -73,6 +129,6 @@ export default async function handler(req, res) {
     }
   } catch (err) {
     console.error('send-whatsapp error:', err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message || String(err) });
   }
 }
