@@ -306,9 +306,15 @@ function showConfirmationModal(rowsToInsert) {
          try {
           const barberList = rowsToInsert.map(r => `${getBarberNameById(r.barber_id) || r.barberName}:${r.haircuts}`).join(', ');
         const whatsappPayload = {
-            templateName: 'hello_world',
-            templateLanguage: 'en_US'
-            // no templateParams for testing
+            templateName: 'daily_submission',
+            templateLanguage: 'en',
+            templateParams: [
+              { parameter_name: 'shop_name', value: shopName },
+              { parameter_name: 'report_date', value: date },
+              { parameter_name: 'cash_total', value: `£${cashTotal}` },
+              { parameter_name: 'barber_list', value: barberList }
+            ],
+            shop: shopSelect.value
           };
           const waResp = await fetch('/api/send-whatsapp', {
             method: 'POST',
