@@ -304,16 +304,17 @@ function showConfirmationModal(rowsToInsert) {
         console.error("Failed to send notification email:", err);
       }
          try {
-            const whatsappPayload = {
+          const barberList = rowsToInsert.map(r => `${getBarberNameById(r.barber_id) || r.barberName}:${r.haircuts}`).join(', ');
+          const whatsappPayload = {
             templateName: 'daily_submission',
-            templateLanguage: 'en',
+            templateLanguage: 'en', // your template language code
             templateParams: [
-              shopName, // {{shop_name}}
-              date,     // {{report_date}}
-              `£${cashTotal}`, // {{cash_total}}
-              rowsToInsert.map(r => `${getBarberNameById(r.barber_id) || r.barberName}:${r.haircuts}`).join(', ') // {{barber_list}}
+              { name: 'shop_name', value: shopName },
+              { name: 'report_date', value: date },
+              { name: 'cash_total', value: `£${cashTotal}` },
+              { name: 'barber_list', value: barberList }
             ],
-            shop: shopSelect.value // optional: allows server to map recipient by shop
+            shop: shopSelect.value
           };
           const waResp = await fetch('/api/send-whatsapp', {
             method: 'POST',
